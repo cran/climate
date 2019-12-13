@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Bartosz Czernecki, Arkadiusz Głogowski, Jakub Nowosad" />
+
+<meta name="date" content="2019-12-04" />
+
+<title>Introduction to the climate package</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to the climate package</h1>
+<h4 class="author"><em>Bartosz Czernecki, Arkadiusz Głogowski, Jakub Nowosad</em></h4>
+<h4 class="date"><em>2019-12-04</em></h4>
+
+
+
+<p>The goal of the <strong>climate</strong> R package is to automatize downloading of meteorological and hydrological data from publicly available repositories:</p>
+<ul>
+<li>OGIMET <a href="http://ogimet.com/index.phtml.en">(ogimet.com)</a></li>
+<li>University of Wyoming - atmospheric vertical profiling data (<a href="http://weather.uwyo.edu/upperair/" class="uri">http://weather.uwyo.edu/upperair/</a>).</li>
+<li>Polish Institute of Meterology and Water Management - National Research Institute <a href="https://dane.imgw.pl/">(IMGW-PIB)</a></li>
+</ul>
+<div id="functions" class="section level2">
+<h2>Functions</h2>
+<p>The <strong>climate</strong> package consists of eigth main functions - three for meteorological data, one for hydrological data and four auxiliary functions and datasets:</p>
+<ol style="list-style-type: decimal">
+<li>Meteorological data:</li>
+</ol>
+<ul>
+<li><p><strong>meteo_ogimet()</strong> - Downloading hourly and daily meteorological data from the SYNOP stations available in the ogimet.com collection. Meteorological (aka Synop) station working under the World Meteorological Organizaton framework after year 2000 should be accessible.</p></li>
+<li><p><strong>sounding_wyoming()</strong> - Downloading radiosonde data for any rawinsonde station in the world (i.e., vertical profiles of the atmosphere) from the Wyoming University repository</p></li>
+<li><p><strong>meteo_imgw()</strong> - A generic function for downloading hourly, daily and monthly dataset, from the IMGW-PIB repository. It is a wrapper for <code>meteo_monthly()</code>, <code>meteo_daily()</code>, and <code>meteo_hourly()</code> from <strong>imgw</strong> package.</p></li>
+</ul>
+<ol start="2" style="list-style-type: decimal">
+<li>Hydrological data:</li>
+</ol>
+<ul>
+<li><strong>hydro_imgw()</strong> - A generic function for downloading daily, monthly, and annual dataset from IMGW-PIB repositor. It is a wrapper for <code>hydro_annual()</code>, <code>hydro_monthly()</code>, and <code>hydro_daily()</code> from <strong>imgw</strong> package.</li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li>Auxiliary functions and datasets:</li>
+</ol>
+<ul>
+<li><p><strong>stations_ogimet()</strong> - Downloading information about all stations available in the selected country in the Ogimet repository</p></li>
+<li><p><strong>nearest_stations_ogimet</strong> - Downloading information about nearest stations to the selected point available in the selected country in the Ogimet repository</p></li>
+<li><p><strong>meteo_imgw_stations</strong> - Built-in metadata for meteorological stations, their geographical coordinates, and ID numbers (from the IMGW-PIB repository)</p></li>
+<li><p><strong>hydro_imgw_stations</strong> -Built-in metadata for hydrological stations, their geographical coordinates, and ID numbers (from the IMGW-PIB repository)</p></li>
+</ul>
+</div>
+<div id="application" class="section level2">
+<h2>Application</h2>
+<p>We will show how to use our package and prepare the data for spatial analysis with the additional help of the <a href="https://CRAN.R-project.org/package=dplyr">dplyr</a> and <a href="https://CRAN.R-project.org/package=tidyr">tidyr</a> packages. Firstly, we download ten years (<strong>2001-2010</strong>) of monthly hydrological observations for all stations available and automatically add their spatial coordinates.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h =<span class="st"> </span><span class="kw">hydro_imgw</span>(<span class="dt">interval =</span> <span class="st">&quot;monthly&quot;</span>, <span class="dt">year =</span> <span class="dv">2001</span><span class="op">:</span><span class="dv">2010</span>, <span class="dt">coords =</span> <span class="ot">TRUE</span>)
+<span class="kw">head</span>(h)
+<span class="co">#&gt;              id       X        Y station riv_or_lake  hyy idhyy idex   H</span>
+<span class="co">#&gt; 95158 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     1    1 214</span>
+<span class="co">#&gt; 95159 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     1    2 228</span>
+<span class="co">#&gt; 95160 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     1    3 250</span>
+<span class="co">#&gt; 95161 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     2    1 215</span>
+<span class="co">#&gt; 95162 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     2    2 225</span>
+<span class="co">#&gt; 95163 150210180 21.8335 50.88641 ANNOPOL   Wisła (2) 2001     2    3 258</span>
+<span class="co">#&gt;         Q  T mm</span>
+<span class="co">#&gt; 95158 172 NA 11</span>
+<span class="co">#&gt; 95159 207 NA 11</span>
+<span class="co">#&gt; 95160 272 NA 11</span>
+<span class="co">#&gt; 95161 174 NA 12</span>
+<span class="co">#&gt; 95162 201 NA 12</span>
+<span class="co">#&gt; 95163 297 NA 12</span></code></pre></div>
+<p>The <code>idex</code> variable represents id of the extremum, where <code>1</code> means minimum, <code>2</code> mean, and <code>3</code> maximum.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> Hydrologists often use the maximum value so we will filter the data and select only the station <code>id</code>, hydrological year (<code>hyy</code>), latitude <code>X</code> and longitude <code>Y</code>. Next, we will calculate the mean maximum value of the flow on the stations in each year with <strong>dplyr</strong>’s <code>summarise()</code>, and spread data by year using <strong>tidyr</strong>’s <code>spread()</code> to get the annual means of maximum flow in the consecutive columns.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h2 =<span class="st"> </span>h <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(idex <span class="op">==</span><span class="st"> </span><span class="dv">3</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(id, station, X, Y, hyy, Q) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">group_by</span>(hyy, id, station, X, Y) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="dt">annual_mean_Q =</span> <span class="kw">round</span>(<span class="kw">mean</span>(Q, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dv">1</span>)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span>tidyr<span class="op">::</span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> hyy, <span class="dt">values_from =</span> annual_mean_Q)</code></pre></div>
+<table>
+<caption>Examplary data frame of hydrological preprocesssing.</caption>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="left">station</th>
+<th align="right">X</th>
+<th align="right">Y</th>
+<th align="right">2001</th>
+<th align="right">2002</th>
+<th align="right">2003</th>
+<th align="right">2004</th>
+<th align="right">2005</th>
+<th align="right">2006</th>
+<th align="right">2007</th>
+<th align="right">2008</th>
+<th align="right">2009</th>
+<th align="right">2010</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">149180010</td>
+<td align="left">KRZYŻANOWICE</td>
+<td align="right">18.28780</td>
+<td align="right">49.99301</td>
+<td align="right">200.5</td>
+<td align="right">147.4</td>
+<td align="right">87.9</td>
+<td align="right">109.2</td>
+<td align="right">170.6</td>
+<td align="right">226.9</td>
+<td align="right">152.9</td>
+<td align="right">131.0</td>
+<td align="right">160.9</td>
+<td align="right">461.1</td>
+</tr>
+<tr class="even">
+<td align="right">149180020</td>
+<td align="left">CHAŁUPKI</td>
+<td align="right">18.32752</td>
+<td align="right">49.92127</td>
+<td align="right">174.7</td>
+<td align="right">96.7</td>
+<td align="right">57.6</td>
+<td align="right">91.8</td>
+<td align="right">146.9</td>
+<td align="right">170.6</td>
+<td align="right">110.2</td>
+<td align="right">101.6</td>
+<td align="right">124.7</td>
+<td align="right">314.6</td>
+</tr>
+<tr class="odd">
+<td align="right">149180040</td>
+<td align="left">GOŁKOWICE</td>
+<td align="right">18.49640</td>
+<td align="right">49.92579</td>
+<td align="right">4.5</td>
+<td align="right">2.0</td>
+<td align="right">1.7</td>
+<td align="right">1.7</td>
+<td align="right">2.5</td>
+<td align="right">3.3</td>
+<td align="right">2.1</td>
+<td align="right">1.7</td>
+<td align="right">2.2</td>
+<td align="right">8.6</td>
+</tr>
+<tr class="even">
+<td align="right">149180050</td>
+<td align="left">ZEBRZYDOWICE</td>
+<td align="right">18.61326</td>
+<td align="right">49.88025</td>
+<td align="right">13.5</td>
+<td align="right">7.9</td>
+<td align="right">3.8</td>
+<td align="right">5.0</td>
+<td align="right">10.4</td>
+<td align="right">6.5</td>
+<td align="right">5.8</td>
+<td align="right">2.8</td>
+<td align="right">4.5</td>
+<td align="right">23.6</td>
+</tr>
+<tr class="odd">
+<td align="right">149180060</td>
+<td align="left">CIESZYN</td>
+<td align="right">18.62972</td>
+<td align="right">49.74616</td>
+<td align="right">57.2</td>
+<td align="right">57.7</td>
+<td align="right">29.8</td>
+<td align="right">26.8</td>
+<td align="right">65.4</td>
+<td align="right">60.7</td>
+<td align="right">54.7</td>
+<td align="right">33.0</td>
+<td align="right">34.7</td>
+<td align="right">135.0</td>
+</tr>
+<tr class="even">
+<td align="right">149180070</td>
+<td align="left">CIESZYN</td>
+<td align="right">18.63137</td>
+<td align="right">49.74629</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">NaN</td>
+<td align="right">0.6</td>
+<td align="right">0.5</td>
+<td align="right">0.6</td>
+<td align="right">0.6</td>
+</tr>
+</tbody>
+</table>
+<!-- The resulting table can be easily exported to any spatial software with a changing annual maximum annual average water flow rate over the decade for Poland as a whole. -->
+<p>The result represents changes in the annual maximum average of water flow rate over the decade for all available stations in Poland. We can save it to:</p>
+<ul>
+<li><p><code>.csv</code> with: <code>write.csv(result, file = &quot;result.csv&quot;, sep = &quot;;&quot;,dec = &quot;.&quot;, col.names = TRUE, row.names = FALSE)</code>. This command saves our result to <code>result.csv</code> where the column’s separator is <code>;</code>, the decimal is <code>.</code>, we are keeping the headers of columns and remove names of rows.</p></li>
+<li><p><code>.xlsx</code> with: <code>write.xlsx(result, file = &quot;result.xlsx&quot;, sheetName = &quot;Poland&quot;, append = FALSE)</code> This command saves our result to result.xlsx with the name of the sheet <code>Poland</code>. Argument <code>append = TRUE</code> adds the sheet to already existing <code>xlsx</code> file. To save data in <code>.xlsx</code> you have first to install the <strong>writexl</strong> package with command: <code>install.packages(&quot;writexl&quot;)</code>, and add it: <code>library(writexl)</code>.</p></li>
+</ul>
+<p>The annual means of maximum flow can be also presented on the map using the <strong>tmap</strong> package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(sf)
+<span class="kw">library</span>(tmap)
+<span class="kw">library</span>(rnaturalearth)
+<span class="kw">library</span>(rnaturalearthdata)
+world =<span class="st"> </span><span class="kw">ne_countries</span>(<span class="dt">scale =</span> <span class="st">&quot;medium&quot;</span>, <span class="dt">returnclass =</span> <span class="st">&quot;sf&quot;</span>)
+
+h3 =<span class="st"> </span>h2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">filter</span>(<span class="op">!</span><span class="kw">is.na</span>(X)) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">st_as_sf</span>(<span class="dt">coords =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>, <span class="st">&quot;Y&quot;</span>))
+
+<span class="kw">tm_shape</span>(h3) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tm_symbols</span>(<span class="dt">size =</span> <span class="kw">as.character</span>(<span class="kw">c</span>(<span class="dv">2001</span><span class="op">:</span><span class="dv">2010</span>)),
+             <span class="dt">title.size =</span> <span class="st">&quot;The annual means of maximum flow&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_facets</span>(<span class="dt">free.scales =</span> <span class="ot">FALSE</span>, <span class="dt">ncol =</span> <span class="dv">4</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tm_shape</span>(world) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">tm_borders</span>(<span class="dt">col =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">lwd =</span> <span class="dv">2</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_layout</span>(<span class="dt">legend.position =</span> <span class="kw">c</span>(<span class="op">-</span><span class="fl">1.25</span>, <span class="fl">0.05</span>),
+            <span class="dt">outer.margins =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>, <span class="dv">0</span>, <span class="op">-</span><span class="fl">0.25</span>),
+            <span class="dt">panel.labels =</span> <span class="kw">as.character</span>(<span class="kw">c</span>(<span class="dv">2001</span><span class="op">:</span><span class="dv">2010</span>)))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(climate)
+ns =<span class="st"> </span><span class="kw">nearest_stations_ogimet</span>(<span class="dt">point =</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="dv">56</span>), <span class="dt">no_of_stations =</span> <span class="dv">50</span>,<span class="dt">add_map =</span> <span class="ot">TRUE</span>)
+<span class="kw">head</span>(ns)</code></pre></div>
+<!-- ![Mean maximum annual flow](../../docs/articles/articles/pl_files/figure-html/unnamed-chunk-1-1.png) -->
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>You can find more information about this in the <code>imgw_hydro_abbrev</code> dataset.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
