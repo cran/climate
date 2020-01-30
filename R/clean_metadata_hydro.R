@@ -1,10 +1,11 @@
-#' Hydrological metadata cleaning
+#' Hydrological metadata cleaning (IMGW-PIB data only)
 #'
 #' Internal function for hydrological metadata cleaning
 #' @param address URL address of the metadata file
 #' @param interval temporal interval
 #' @importFrom RCurl getURL
 #' @importFrom utils read.fwf
+#' @keywords internal
 clean_metadata_hydro <- function(address, interval){
   #miesieczne
   #address="https://dane.imgw.pl/data/dane_pomiarowo_obserwacyjne/dane_hydrologiczne/miesieczne/mies_info.txt"
@@ -18,6 +19,10 @@ clean_metadata_hydro <- function(address, interval){
   a <- readLines(address, warn = FALSE)
   a <- iconv(a, from = "cp1250", to = "ASCII//TRANSLIT") # usuwamy polskie znaki, bo to robi spore "kuku"
   a <- gsub(a, pattern = "\\?", replacement = "") # usuwamy znaki zapytania powstale po konwersji
+  
+  # additional workarounds for mac os but not only...
+  a = gsub(x = a, pattern="'", replacement = "")
+  a = gsub(x = a, pattern="\\^", replacement = "")
 
   if (interval == "monthly") {
     b <- list(data.frame(parameters = a[3:12])) # skład danych jeszcze nie wiem jak ominąć problem kontroli

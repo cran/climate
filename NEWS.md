@@ -1,3 +1,10 @@
+# climate 0.9.1
+
+* climate is independent of imgw package
+* Bug fixes
+    * #24
+* restored possibility of downloading single station from Polish (IMGW) repository
+
 # climate 0.3
 
 * improves API

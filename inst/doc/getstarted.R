@@ -47,6 +47,6 @@ kable(head(h2), caption = "Examplary data frame of hydrological preprocesssing."
 
 ## ----nearest, eval=FALSE, include=TRUE-----------------------------------
 #  library(climate)
-#  ns = nearest_stations_ogimet(point =c(-4, 56), no_of_stations = 50,add_map = TRUE)
+#  ns = nearest_stations_ogimet(point =c(-4, 56), no_of_stations = 50, add_map = TRUE)
 #  head(ns)
 

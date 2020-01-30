@@ -12,7 +12,7 @@
 
 <meta name="author" content="Bartosz Czernecki, Arkadiusz Głogowski, Jakub Nowosad" />
 
-<meta name="date" content="2019-12-04" />
+<meta name="date" content="2020-01-30" />
 
 <title>Introduction to the climate package</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Introduction to the climate package</h1>
 <h4 class="author"><em>Bartosz Czernecki, Arkadiusz Głogowski, Jakub Nowosad</em></h4>
-<h4 class="date"><em>2019-12-04</em></h4>
+<h4 class="date"><em>2020-01-30</em></h4>
 
 
 
@@ -103,8 +103,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ul>
 <li><p><strong>stations_ogimet()</strong> - Downloading information about all stations available in the selected country in the Ogimet repository</p></li>
 <li><p><strong>nearest_stations_ogimet</strong> - Downloading information about nearest stations to the selected point available in the selected country in the Ogimet repository</p></li>
-<li><p><strong>meteo_imgw_stations</strong> - Built-in metadata for meteorological stations, their geographical coordinates, and ID numbers (from the IMGW-PIB repository)</p></li>
-<li><p><strong>hydro_imgw_stations</strong> -Built-in metadata for hydrological stations, their geographical coordinates, and ID numbers (from the IMGW-PIB repository)</p></li>
+<li><p><strong>imgw_meteo_stations</strong> - Built-in metadata from the IMGW-PIB repository for meteorological stations, their geographical coordinates, and ID numbers</p></li>
+<li><p><strong>imgw_hydro_stations</strong> - Built-in metadata from the IMGW-PIB repository for hydrological stations, their geographical coordinates, and ID numbers</p></li>
+<li><p><strong>imgw_meteo_abbrev</strong> - Dictionary explaining variables available for meteorological stations (from the IMGW-PIB repository)</p></li>
+<li><p><strong>imgw_hydro_abbrev</strong> - Dictionary explaining variables available for hydrological stations (from the IMGW-PIB repository)</p></li>
 </ul>
 </div>
 <div id="application" class="section level2">
@@ -279,7 +281,7 @@ h3 =<span class="st"> </span>h2 <span class="op">%&gt;%</span><span class="st"> 
             <span class="dt">outer.margins =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>, <span class="dv">0</span>, <span class="op">-</span><span class="fl">0.25</span>),
             <span class="dt">panel.labels =</span> <span class="kw">as.character</span>(<span class="kw">c</span>(<span class="dv">2001</span><span class="op">:</span><span class="dv">2010</span>)))</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(climate)
-ns =<span class="st"> </span><span class="kw">nearest_stations_ogimet</span>(<span class="dt">point =</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="dv">56</span>), <span class="dt">no_of_stations =</span> <span class="dv">50</span>,<span class="dt">add_map =</span> <span class="ot">TRUE</span>)
+ns =<span class="st"> </span><span class="kw">nearest_stations_ogimet</span>(<span class="dt">point =</span><span class="kw">c</span>(<span class="op">-</span><span class="dv">4</span>, <span class="dv">56</span>), <span class="dt">no_of_stations =</span> <span class="dv">50</span>, <span class="dt">add_map =</span> <span class="ot">TRUE</span>)
 <span class="kw">head</span>(ns)</code></pre></div>
 <!-- ![Mean maximum annual flow](../../docs/articles/articles/pl_files/figure-html/unnamed-chunk-1-1.png) -->
 </div>
