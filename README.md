@@ -13,6 +13,8 @@ and hydrological data from publicly available repositories:
 - OGIMET [(ogimet.com)](http://ogimet.com/index.phtml.en) 
 - University of Wyoming - atmospheric vertical profiling data (http://weather.uwyo.edu/upperair/).
 - Polish Institute of Meterology and Water Management - National Research Institute [(IMGW-PIB)](https://dane.imgw.pl/)
+- National Oceanic & Atmospheric Administration - Earth System Research Laboratory - Global Monitoring Division [(NOAA)](https://www.esrl.noaa.gov/gmd/ccgg/trends/)
+- National Oceanic & Atmospheric Administration - National Climatic Data Center - Integrated Surface Hourly (ISH) [(NOAA)](https://www1.ncdc.noaa.gov/pub/data/noaa/)
 
 ## Installation
 
@@ -39,7 +41,12 @@ Any meteorological (aka SYNOP) station working under the World Meteorological Or
 - **meteo_imgw()** - Downloading hourly, daily, and monthly meteorological data from the SYNOP/CLIMATE/PRECIP stations available in the danepubliczne.imgw.pl collection. 
 It is a wrapper for `meteo_monthly()`, `meteo_daily()`, and `meteo_hourly()` from [the **imgw** package](https://github.com/bczernecki/imgw).
 
+- **meteo_noaa_hourly()** - Downloading hourly NOAA Integrated Surface Hourly (ISH) meteorological data - Some stations have > 100 years long history of observations
+
 - **sounding_wyoming()** - Downloading measurements of the vertical profile of atmosphere (aka rawinsonde data)
+
+- **meteo_noaa_co2()** - Downloading monthly CO2 measurements from Mauna Loa Observatory
+
   
 ### Hydrological data
 
@@ -59,6 +66,25 @@ coordinates, and ID numbers
 coordinates, and ID numbers
 - **imgw_meteo_abbrev** - Dictionary explaining variables available for meteorological stations (from the IMGW-PIB repository)
 - **imgw_hydro_abbrev** - Dictionary explaining variables available for hydrological stations (from the IMGW-PIB repository)
+
+
+
+## Example 0
+#### Download hourly dataset from NOAA ISH meteorological repository:
+
+``` r0
+library(climate)
+noaa <- meteo_noaa_hourly(station = "123300-99999", year = 2018:2019) # station ID: Poznan, Poland
+head(noaa)
+
+#    year month day hour   lon    lat alt t2m dpt2m ws  wd    slp visibility
+# 1  2019     1   1    0 16.85 52.417  84 3.3   2.3  5 220 1025.0       6000
+# 4  2019     1   1    1 16.85 52.417  84 3.7   3.0  4 220 1024.2       1500
+# 7  2019     1   1    2 16.85 52.417  84 4.2   3.6  4 220 1022.5       1300
+# 10 2019     1   1    3 16.85 52.417  84 5.2   4.6  5 240 1021.2       1900
+```
+
+
 
 ## Example 1 
 #### Finding a nearest meteorological stations in a given country:
@@ -183,17 +209,34 @@ climatol::diagwl(monthly_summary, mlab = "en", est = "POZNAŃ", alt = NA,
 #### Download monthly CO2 dataset from Mauna Loa observatory
 
 ``` r5
-  library(climate)
-  co2 <- meteo_noaa_co2()
-  head(co2)
-  plot(co2$yy_d, co2$co2_avg, type='l')
+library(climate)
+library(ggplot2)
+library(ggthemes)
+
+co2 = meteo_noaa_co2()
+head(co2)
+co2$date = ISOdate(co2$yy, co2$mm, 1)
+ggplot(co2, aes(date, co2_avg)) + 
+  geom_line()+ geom_smooth()+
+  theme_bw()+
+  labs(
+    title = "Carbon Dioxide (CO2)",
+    subtitle = paste0("Mauna Loa Observatory "),
+    caption = "data source: NOAA
+    visualization: Bartosz Czernecki / R climate package",
+    x = "",
+    y = "ppm"
+)
+
 ```
+
+![CO2 monthly concentration, Mauna Loa observatory](http://iqdata.eu/kolokwium/co2_chart.svg)
 
 
 
 ## Acknowledgment
 
-Ogimet.com, University of Wyoming, and Institute of Meteorology and Water Management - National Research Institute (IMGW-PIB) are the sources of the data.
+Ogimet.com, University of Wyoming, and Institute of Meteorology and Water Management - National Research Institute (IMGW-PIB), National Oceanic & Atmospheric Administration (NOAA) - Earth System Research Laboratory, Global Monitoring Division and Integrated Surface Hourly (NOAA ISH) are the sources of the data.
 
 ## Contribution
 

@@ -1,11 +1,11 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 options(scipen=999)
 
-## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE-----
+## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE----------
 library(climate)
 ns = nearest_stations_ogimet(country ="United+Kingdom",point = c(-4, 56),
                              no_of_stations = 50, add_map = TRUE)
@@ -18,34 +18,41 @@ head(ns)
 #> 35  03166 Edinburgh Gogarbank  -3.350007 55.93335  57      73.30942
 #> 28  03136      Prestwick RNAS  -4.583345 55.51668  26      84.99537
 
-## ----stations, eval=T, fig.width=7, fig.height=7, fig.fullwidth=T--------
+## ----stations, eval=T, fig.width=7, fig.height=7, fig.fullwidth=T-------------
 library(climate)
 PL = stations_ogimet(country ="Poland", add_map = TRUE)
 head(PL)
 
-## ----windrose,eval=T-----------------------------------------------------
-# downloading data
-df <- meteo_ogimet(interval = "hourly", date = c("2018-01-01", "2018-12-31"),station = c("01008"))
+## ----windrose,eval=T----------------------------------------------------------
+# downloading data with NOAA service:
+df = meteo_noaa_hourly(station = "010080-99999", year = 2018)
 
-## ----windrose2, echo=FALSE-----------------------------------------------
+# downloading the same data with Ogimet.com:
+# df <- meteo_ogimet(interval = "hourly", date = c("2018-01-01", "2018-12-31"),
+#                   station = c("01008"))
+
+## ----windrose2, echo=FALSE----------------------------------------------------
 library(knitr)
-kable(head(df[,c(1:12)],10), caption = "Examplary data frame of meteorological data.")
+kable(head(df[,c(-2:-5)],10), caption = "Examplary data frame of meteorological data.")
 
-## ----sonda,eval=T, fig.width=7, fig.height=7, fig.fullwidth=TRUE---------
+## ----sonda,eval=T, fig.width=7, fig.height=7, fig.fullwidth=TRUE--------------
 library(climate)
-profile <- sounding_wyoming(wmo_id = 12120, yy = 2020, mm = 3, dd = 23, hh = 0)
+profile <- sounding_wyoming(wmo_id = 12120, yy = 2020, mm = 2, dd = 23, hh = 0)
 df2 <- profile[[1]] 
 colnames(df2)[c(1, 3:4)] = c("press", "temp", "dewpt") # changing column names
 
-## ----sonda2, echo=FALSE--------------------------------------------------
+## ----sonda2, echo=FALSE-------------------------------------------------------
 library(knitr)
 kable(head(df2,10), caption = "Examplary data frame of sounding preprocesssing.")
 
-## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE-----------
+## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE----------------
 library(climate)
 library(dplyr)
 
-df = meteo_imgw(interval = 'monthly', rank='synop', year = 1991:2019, station = "POZNAŃ") 
+df = meteo_imgw(interval = 'monthly', rank='synop', year = 1991:2019, 
+                station = c("POZNAŃ", "POZNAŃ-ŁAWICA")) 
+# sometimes 2 names are used for the same station in different years
+
 df2 = select(df, station:t2m_mean_mon, rr_monthly)
 
 monthly_summary = df2 %>% 
@@ -59,18 +66,19 @@ monthly_summary = as.data.frame(t(monthly_summary[, c(5,2,3,4)]))
 monthly_summary = round(monthly_summary, 1)
 colnames(monthly_summary) = month.abb
 
-## ----imgw_meto2, echo=FALSE----------------------------------------------
+
+## ----imgw_meto2, echo=FALSE---------------------------------------------------
 library(knitr)
 kable(head(monthly_summary), caption = "Examplary data frame of meteorological preprocesssing.")
 
-## ----data----------------------------------------------------------------
+## ----data---------------------------------------------------------------------
 library(climate)
 library(dplyr)
 library(tidyr)
-h = hydro_imgw(interval = "monthly", year = 2001:2010, coords = TRUE)
+h = hydro_imgw(interval = "monthly", year = 2001:2005, coords = TRUE)
 head(h)
 
-## ----filtering, eval=TRUE, include=TRUE----------------------------------
+## ----filtering, eval=TRUE, include=TRUE---------------------------------------
 h2 = h %>%
   filter(idex == 3) %>%
   select(id, station, X, Y, hyy, Q) %>%
@@ -78,7 +86,7 @@ h2 = h %>%
   summarise(annual_mean_Q = round(mean(Q, na.rm = TRUE), 1)) %>% 
   pivot_wider(names_from = hyy, values_from = annual_mean_Q)
 
-## ----filtering2, echo=FALSE----------------------------------------------
+## ----filtering2, echo=FALSE---------------------------------------------------
 library(knitr)
 kable(head(h2), caption = "Examplary data frame of hydrological preprocesssing.")
 

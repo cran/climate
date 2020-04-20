@@ -1,6 +1,6 @@
 Package: climate
 Title: Interface to Download Meteorological (and Hydrological) Datasets
-Version: 0.9.3
+Version: 0.9.4
 Authors@R: c(person(given = "Bartosz",
            family = "Czernecki",
            role = c("aut", "cre"),
@@ -20,7 +20,8 @@ Authors@R: c(person(given = "Bartosz",
 Description: Automatize downloading of meteorological and hydrological data from publicly available repositories:
     OGIMET (<http://ogimet.com/index.phtml.en>), 
     University of Wyoming - atmospheric vertical profiling data (<http://weather.uwyo.edu/upperair>),
-    and Polish Institute of Meterology and Water Management - National Research Institute (<https://dane.imgw.pl>).
+    Polish Institute of Meterology and Water Management - National Research Institute (<https://dane.imgw.pl>),
+    and National Oceanic & Atmospheric Administration (NOAA).
     This package also allows for adding geographical coordinates for each observation.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -33,11 +34,11 @@ URL: https://github.com/bczernecki/climate
 BugReports: https://github.com/bczernecki/climate/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-03-29 15:50:04 UTC; bartosz
+Packaged: 2020-04-20 10:36:10 UTC; bartosz
 Author: Bartosz Czernecki [aut, cre] (<https://orcid.org/0000-0001-6496-1386>),
   Arkadiusz Głogowski [aut] (<https://orcid.org/0000-0002-7587-8892>),
   Jakub Nowosad [aut] (<https://orcid.org/0000-0002-1057-3721>),
   IMGW-PIB [ctb] (source of the data)
 Maintainer: Bartosz Czernecki <nwp@amu.edu.pl>
 Repository: CRAN
-Date/Publication: 2020-03-30 08:50:09 UTC
+Date/Publication: 2020-04-20 13:50:02 UTC
