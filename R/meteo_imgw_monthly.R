@@ -2,7 +2,7 @@
 #'
 #' Downloading monthly (meteorological) data from the SYNOP / CLIMATE / PRECIP stations available in the danepubliczne.imgw.pl collection
 #'
-#' @param rank rank of the stations ("synop", "climate", or "precip")
+#' @param rank rank of the stations: "synop" (default), "climate", or "precip"
 #' @param year vector of years (e.g., 1966:2000)
 #' @param status leave the columns with measurement and observation statuses (default status = FALSE - i.e. the status columns are deleted)
 #' @param coords add coordinates of the station (logical value TRUE or FALSE)
@@ -10,9 +10,8 @@
 #' It accepts names (characters in CAPITAL LETTERS) or stations' IDs (numeric)
 #' @param col_names three types of column names possible: "short" - default, values with shorten names, "full" - full English description, "polish" - original names in the dataset
 #' @param ... other parameters that may be passed to the 'shortening' function that shortens column names
-#' @importFrom RCurl getURL
 #' @importFrom XML readHTMLTable
-#' @importFrom utils download.file unzip read.csv
+#' @importFrom utils unzip read.csv
 #' @export
 #'
 #' @examples \donttest{
@@ -31,20 +30,36 @@
 #' }
 #'
 
-meteo_imgw_monthly <- function(rank, year, status = FALSE, coords = FALSE, station = NULL, col_names = "short", ...){
+meteo_imgw_monthly <- function(rank = "synop", year, status = FALSE, coords = FALSE, station = NULL, col_names = "short", ...){
 
-  options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
+  #options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
   
   base_url <- "https://dane.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
   
-  interval <- "miesieczne" # to mozemy ustawic na sztywno do odwolania w url
+  # if (httr::http_error(base_url)) {
+  #   b = stop(call. = FALSE, 
+  #            paste0("\nDownload failed. ",
+  #                   "Check your internet connection or validate this url in your browser: ",
+  #                   base_url,
+  #                   "\n"))
+  # }
+  # 
+  # 
+  interval_pl <- "miesieczne" # to mozemy ustawic na sztywno do odwolania w url
   meta <- meteo_metadata_imgw(interval = "monthly", rank = rank)
   
   rank_pl <- switch(rank, synop = "synop", climate = "klimat", precip = "opad")
   
-  a <- getURL(paste0(base_url, "dane_meteorologiczne/", interval, "/", rank_pl, "/"),
-              ftp.use.epsv = FALSE,
-              dirlistonly = TRUE)
+  # checking net connection:
+  temp = tempfile()
+  test_url(link = paste0(base_url, "dane_meteorologiczne/", interval_pl, "/", rank_pl, "/"),
+           output = temp)
+  a = readLines(temp, warn = FALSE)
+  unlink(temp)
+  
+  # a <- getURL(paste0(base_url, "dane_meteorologiczne/", interval, "/", rank_pl, "/"),
+  #             ftp.use.epsv = FALSE,
+  #             dirlistonly = TRUE)
   ind <- grep(readHTMLTable(a)[[1]]$Name, pattern = "/")
   catalogs <- as.character(readHTMLTable(a)[[1]]$Name[ind])
   
@@ -75,7 +90,8 @@ meteo_imgw_monthly <- function(rank, year, status = FALSE, coords = FALSE, stati
     
     temp <- tempfile()
     temp2 <- tempfile()
-    download.file(address, temp)
+    test_url(address, temp)
+    #download.file(address, temp)
     unzip(zipfile = temp, exdir = temp2)
     file1 <- paste(temp2, dir(temp2), sep = "/")[1]
     data1 <- read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")

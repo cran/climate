@@ -37,13 +37,19 @@ kable(head(df[,c(-2:-5)],10), caption = "Examplary data frame of meteorological 
 
 ## ----sonda,eval=T, fig.width=7, fig.height=7, fig.fullwidth=TRUE--------------
 library(climate)
-profile <- sounding_wyoming(wmo_id = 12120, yy = 2020, mm = 2, dd = 23, hh = 0)
-df2 <- profile[[1]] 
-colnames(df2)[c(1, 3:4)] = c("press", "temp", "dewpt") # changing column names
+data("profile_demo")
+# same as:
+# profile_demo <- sounding_wyoming(wmo_id = 12120,
+#                                  yy = 2000,
+#                                  mm = 3,
+#                                  dd = 23,
+#                                  hh = 0)
+df2 <- profile_demo[[1]] 
+colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 
 ## ----sonda2, echo=FALSE-------------------------------------------------------
 library(knitr)
-kable(head(df2,10), caption = "Examplary data frame of sounding preprocesssing.")
+kable(head(df2,10), caption = "Examplary data frame of sounding preprocessing")
 
 ## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE----------------
 library(climate)
@@ -69,7 +75,7 @@ colnames(monthly_summary) = month.abb
 
 ## ----imgw_meto2, echo=FALSE---------------------------------------------------
 library(knitr)
-kable(head(monthly_summary), caption = "Examplary data frame of meteorological preprocesssing.")
+kable(head(monthly_summary), caption = "Examplary data frame of meteorological preprocessing.")
 
 ## ----data---------------------------------------------------------------------
 library(climate)

@@ -2,7 +2,7 @@
 #'
 #' Downloading hourly (meteorological) data from the SYNOP / CLIMATE / PRECIP stations available in the danepubliczne.imgw.pl collection
 #'
-#' @param rank rank of the stations ("synop", "climate", or "precip")
+#' @param rank rank of the stations: "synop" (default), "climate", or "precip"
 #' @param year vector of years (e.g., 1966:2000)
 #' @param status leave the columns with measurement and observation statuses (default status = FALSE - i.e. the status columns are deleted)
 #' @param coords add coordinates of the station (logical value TRUE or FALSE)
@@ -10,7 +10,6 @@
 #' It accepts names (characters in CAPITAL LETTERS) or stations' IDs (numeric)
 #' @param col_names three types of column names possible: "short" - default, values with shorten names, "full" - full English description, "polish" - original names in the dataset
 #' @param ... other parameters that may be passed to the 'shortening' function that shortens column names
-#' @importFrom RCurl getURL
 #' @importFrom XML readHTMLTable
 #' @importFrom utils download.file unzip read.csv
 #' @export
@@ -21,14 +20,13 @@
 #' }
 #'
 
-meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, station = NULL, col_names = "short", ...){
+meteo_imgw_hourly <- function(rank = "synop", year, status = FALSE, coords = FALSE, station = NULL, col_names = "short", ...){
 
   stopifnot(rank == "synop" | rank == "climate") # dla terminowek tylko synopy i klimaty maja dane
   
-  options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
+  #options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
   
   base_url <- "https://dane.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
-  
   interval <- "hourly" # to mozemy ustawic na sztywno
   interval_pl <- "terminowe" # to mozemy ustawic na sztywno
   
@@ -36,9 +34,15 @@ meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, statio
   
   rank_pl <- switch(rank, synop = "synop", climate = "klimat", precip = "opad")
   
-  a <- getURL(paste0(base_url, "dane_meteorologiczne/", interval_pl, "/", rank_pl, "/"),
-              ftp.use.epsv = FALSE,
-              dirlistonly = TRUE)
+  temp = tempfile()
+  test_url(link = paste0(base_url, "dane_meteorologiczne/", interval_pl, "/", rank_pl, "/"),
+           output = temp)
+  a = readLines(temp, warn = FALSE)
+  unlink(temp)
+  
+  # a <- getURL(paste0(base_url, "dane_meteorologiczne/", interval_pl, "/", rank_pl, "/"),
+  #             ftp.use.epsv = FALSE,
+  #             dirlistonly = TRUE)
   ind <- grep(readHTMLTable(a)[[1]]$Name, pattern = "/")
   catalogs <- as.character(readHTMLTable(a)[[1]]$Name[ind])
   
@@ -56,7 +60,11 @@ meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, statio
     if(rank == "synop") {
       address <- paste0(base_url, "dane_meteorologiczne/terminowe/synop",
                         "/", catalog, "/")
-      folder_contents <- getURL(address, ftp.use.epsv = FALSE, dirlistonly = FALSE) # zawartosc folderu dla wybranego roku
+      #folder_contents <- getURL(address, ftp.use.epsv = FALSE, dirlistonly = FALSE) # zawartosc folderu dla wybranego roku
+      
+      test_url(link = address, output = temp)
+      folder_contents = readLines(temp, warn = FALSE)
+      unlink(temp)
       
       ind <- grep(readHTMLTable(folder_contents)[[1]]$Name, pattern = "zip")
       files <- as.character(readHTMLTable(folder_contents)[[1]]$Name[ind])
@@ -67,7 +75,8 @@ meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, statio
       for(j in seq_along(addresses_to_download)){
         temp <- tempfile()
         temp2 <- tempfile()
-        download.file(addresses_to_download[j], temp)
+        test_url(addresses_to_download[j], temp)
+        #download.file(addresses_to_download[j], temp)
         unzip(zipfile = temp, exdir = temp2)
         file1 <- paste(temp2, dir(temp2), sep = "/")
         data1 <- read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")
@@ -89,7 +98,11 @@ meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, statio
     if(rank == "climate") {
       address <- paste0(base_url, "dane_meteorologiczne/terminowe/klimat",
                         "/", catalog, "/")
-      folder_contents <- getURL(address, ftp.use.epsv = FALSE, dirlistonly = FALSE) # zawartosc folderu dla wybranego roku
+      #folder_contents <- getURL(address, ftp.use.epsv = FALSE, dirlistonly = FALSE) # zawartosc folderu dla wybranego roku
+      
+      test_url(link = address, output = temp)
+      folder_contents = readLines(temp, warn = FALSE)
+      unlink(temp)
       
       ind <- grep(readHTMLTable(folder_contents)[[1]]$Name, pattern = "zip")
       files <- as.character(readHTMLTable(folder_contents)[[1]]$Name[ind])
@@ -100,7 +113,7 @@ meteo_imgw_hourly <- function(rank, year, status = FALSE, coords = FALSE, statio
       for(j in seq_along(addresses_to_download)){
         temp <- tempfile()
         temp2 <- tempfile()
-        download.file(addresses_to_download[j], temp)
+        test_url(addresses_to_download[j], temp)
         unzip(zipfile = temp, exdir = temp2)
         file1 <- paste(temp2, dir(temp2), sep = "/")
         data1 <- read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")

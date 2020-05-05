@@ -8,7 +8,6 @@
 #' @param station WMO ID of meteorological station(s). Character or numeric vector
 #' @param precip_split whether to split precipitation fields into 6/12/24h
 #' numeric fields (logical value TRUE (default) or FALSE); valid only for hourly time step
-#' @importFrom RCurl getURL
 #' @importFrom XML readHTMLTable
 #' 
 #' @export
@@ -59,9 +58,11 @@
 #' @examples 
 #' \donttest{
 #'   # downloading data for Poznan-Lawica
-#'   poznan <- meteo_ogimet(interval = "daily", date = c("2019-06-01", "2019-07-08"),
-#'                    station = 12330, coords = TRUE)
-#'   head(poznan)
+#'   # poznan = meteo_ogimet(interval = "daily", 
+#'   #                      date = c(Sys.Date()-30, Sys.Date()),
+#'   #                      station = 12330, 
+#'   #                      coords = TRUE)
+#'   # head(poznan)
 #' }
 #'
 meteo_ogimet <- function(interval, date, coords = FALSE, station, precip_split = TRUE){

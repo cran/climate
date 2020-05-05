@@ -1,3 +1,10 @@
+# climate 0.9.5
+
+* Following CRAN policies
+    * Adding information if connection issues detected or URL no accessible
+    * RCurl dependency removal
+    * CO2 & Wyoming examplary data can be loaded offline
+
 # climate 0.9.4
 
 * New dataset:
