@@ -25,10 +25,10 @@ head(PL)
 
 ## ----windrose,eval=T----------------------------------------------------------
 # downloading data with NOAA service:
-df = meteo_noaa_hourly(station = "010080-99999", year = 2018)
+df = meteo_noaa_hourly(station = "010080-99999", year = 2019)
 
 # downloading the same data with Ogimet.com:
-# df <- meteo_ogimet(interval = "hourly", date = c("2018-01-01", "2018-12-31"),
+# df <- meteo_ogimet(interval = "hourly", date = c("2019-01-01", "2019-12-31"),
 #                   station = c("01008"))
 
 ## ----windrose2, echo=FALSE----------------------------------------------------
