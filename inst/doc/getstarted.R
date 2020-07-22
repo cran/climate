@@ -25,9 +25,10 @@ head(PL)
 
 ## ----windrose,eval=T----------------------------------------------------------
 # downloading data with NOAA service:
-df = meteo_noaa_hourly(station = "010080-99999", year = 2019)
+df = meteo_noaa_hourly(station = "010080-99999", 
+                       year = sample(2000:2020, 1))
 
-# downloading the same data with Ogimet.com:
+# downloading the same data with Ogimet.com (example for 2019):
 # df <- meteo_ogimet(interval = "hourly", date = c("2019-01-01", "2019-12-31"),
 #                   station = c("01008"))
 
@@ -55,9 +56,8 @@ kable(head(df2,10), caption = "Examplary data frame of sounding preprocessing")
 library(climate)
 library(dplyr)
 
-df = meteo_imgw(interval = 'monthly', rank='synop', year = 1991:2019, 
-                station = c("POZNAŃ", "POZNAŃ-ŁAWICA")) 
-# sometimes 2 names are used for the same station in different years
+df = meteo_imgw(interval = 'monthly', rank='synop', year = 1991:2019, station = "ŁEBA") 
+# please note that sometimes 2 names are used for the same station in different years
 
 df2 = select(df, station:t2m_mean_mon, rr_monthly)
 

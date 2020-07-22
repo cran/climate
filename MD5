@@ -1,4 +1,4 @@
-11cdd74a28b3e849dd8201ee05a5ff20 *DESCRIPTION
+cdc81c715377fc18c355736fb34d1b86 *DESCRIPTION
 b82f9a3ce5bb877ce4606fb4445329e0 *LICENSE
 03bdb256d86e21dabcf4fcb8ff365541 *NAMESPACE
 cc97b1ef758ca5a7b7b39e6ccb488d4c *NEWS.md
@@ -23,7 +23,7 @@ bec96d03452a8396fa661817100b4d14 *R/meteo_imgw_hourly.R
 65b7ed79cb5e991fe87a7a475183ee36 *R/meteo_imgw_monthly.R
 564069588e94b1848fa7913ec7ff72b2 *R/meteo_metadata_imgw.R
 16b7497f860cb7d044cbd996c8749445 *R/meteo_noaa_co2.R
-c72971c68ccae2d3af9707adf11f2f52 *R/meteo_noaa_hourly.R
+9424c3154b966f0de255700bdc5a1dd7 *R/meteo_noaa_hourly.R
 6c9da4d5b099b4778b2bf921a35b7214 *R/meteo_ogimet.R
 01b839c17be586267b1f1a7e4cafd66b *R/meteo_shortening_imgw.R
 864042ab67b23e0d3483c3706c638723 *R/nearest_stations_imgw.R
@@ -46,9 +46,9 @@ ff4e3672bb4189825b37ffc941524f1e *data/imgw_hydro_stations.rda
 3c5376846a689457a15c312716797668 *data/imgw_meteo_stations.rda
 8f132d9940cc75f3626c9c48a9942fe5 *data/profile_demo.rda
 5b8334b95a85ebe1015b340fbdaa479a *inst/CITATION
-407bd12526c98d214ce2a0aa944e6e1d *inst/doc/getstarted.R
-b19afef9240b2633a9479863cef936b3 *inst/doc/getstarted.Rmd
-49afab6883b0017cf911a3981bd85db7 *inst/doc/getstarted.html
+e5a2a79489f3522804588cdc3a5882cb *inst/doc/getstarted.R
+52273a8505bf825db74b1d1a5f88ba5d *inst/doc/getstarted.Rmd
+0b7897c35d0142f1f1bebc179c50a409 *inst/doc/getstarted.html
 32bac82cf4cc9b1557b56ce562726f59 *man/clean_metadata_hydro.Rd
 9694856579a59eb77332ef7accfc0b83 *man/clean_metadata_meteo.Rd
 cb1c36c916c98e8ebed09c264a165bd3 *man/climate-package.Rd
@@ -94,4 +94,4 @@ ba9cbcb229799f3a267c606ec9683e8d *tests/testthat/test-meteo_imgw.R
 d00ca6a93d7e8476c5da9d8b0911941c *tests/testthat/test-meteo_ogimet.R
 2a0d57d3ee37f6614ee149f189943965 *tests/testthat/test-nearest_stations_ogimet.R
 2c7f6505a9067d03d3175f9835dff3ed *tests/testthat/test-sounding_wyoming.R
-b19afef9240b2633a9479863cef936b3 *vignettes/getstarted.Rmd
+52273a8505bf825db74b1d1a5f88ba5d *vignettes/getstarted.Rmd
