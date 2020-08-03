@@ -1,3 +1,12 @@
+# climate 0.9.8
+
+* Adding informative message if problems with NOAA hourly dataset occur
+* Informative message if problems with downloading detected for non-IMGW dataset
+
+# climate 0.9.7
+
+* stop working if no internet connection detected
+
 # climate 0.9.6
 
 * Adding nearest_stations_noaa for NOAA hourly dataset
