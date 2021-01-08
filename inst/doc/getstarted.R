@@ -7,8 +7,10 @@ options(scipen=999)
 
 ## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE----------
 library(climate)
-ns = nearest_stations_ogimet(country ="United+Kingdom",point = c(-4, 56),
-                             no_of_stations = 50, add_map = TRUE)
+ns = nearest_stations_ogimet(country ="United+Kingdom",
+                             point = c(-4, 56),
+                             no_of_stations = 50, 
+                             add_map = TRUE)
 head(ns)
 #>    wmo_id       station_names       lon       lat alt  distance [km]
 #> 29  03144         Strathallan  -3.733348 56.31667  35      46.44794
