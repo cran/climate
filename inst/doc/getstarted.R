@@ -22,7 +22,7 @@ head(ns)
 
 ## ----stations, eval=T, fig.width=7, fig.height=7, fig.fullwidth=T-------------
 library(climate)
-PL = stations_ogimet(country ="Poland", add_map = TRUE)
+PL = stations_ogimet(country = "Poland", add_map = TRUE)
 head(PL)
 
 ## ----windrose,eval=T----------------------------------------------------------
@@ -54,11 +54,11 @@ colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 library(knitr)
 kable(head(df2,10), caption = "Examplary data frame of sounding preprocessing")
 
-## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE----------------
+## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE, error=TRUE----
 library(climate)
 library(dplyr)
 
-df = meteo_imgw(interval = 'monthly', rank='synop', year = 1991:2019, station = "ŁEBA") 
+df = meteo_imgw(interval = "monthly", rank = "synop", year = 1991:2019, station = "ŁEBA") 
 # please note that sometimes 2 names are used for the same station in different years
 
 df2 = select(df, station:t2m_mean_mon, rr_monthly)
@@ -75,7 +75,7 @@ monthly_summary = round(monthly_summary, 1)
 colnames(monthly_summary) = month.abb
 
 
-## ----imgw_meto2, echo=FALSE---------------------------------------------------
+## ----imgw_meto2, echo=FALSE, error=TRUE---------------------------------------
 library(knitr)
 kable(head(monthly_summary), caption = "Examplary data frame of meteorological preprocessing.")
 
