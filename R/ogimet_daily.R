@@ -109,7 +109,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
           test = b[1:2, ]
           
           if (is.null(test) ) {
-            warning(paste0("Wrong station ID: ", station_nr, " You can check station ID at https://ogimet.com/display_stations.php?lang=en&tipo=AND&isyn=&oaci=&nombre=&estado=&Send=Send"))
+            warning(paste0("Wrong station ID: ", station_nr, " You can check available stations ID at https://ogimet.com/display_stations.php?lang=en&tipo=AND&isyn=&oaci=&nombre=&estado=&Send=Send"))
             return(data_station)
           } 
           
@@ -117,7 +117,12 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
           if (all(is.na(test[2,]))) {
             message("no values in column names")
           } else {
-          
+            
+            # number of columns contain weird/non-standard data (e.g. only wind speed)
+            if(ncol(test) <= 4){
+              warning(paste0("Mandatory meteorological parameters (i.e. Temperature or precipitations) are not present. \nCheck content of the current URL:\n",
+                             linkpl2))
+            }
             
             if ((length(test[2, !is.na(test[2, ])]) == 6 &
                  test[2, 5] == "Int.")) {
