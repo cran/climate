@@ -12,18 +12,18 @@
 #'
 #' @examples 
 #' \donttest{
-#'   stations_ogimet(country = "Australia", add_map = TRUE)
+#'   # stations_ogimet(country = "Australia", add_map = TRUE)
 #' }
 #'
-stations_ogimet = function(country = "United+Kingdom", date = Sys.Date(), add_map = FALSE){
+stations_ogimet = function(country = "United+Kingdom", date = Sys.Date(), add_map = FALSE) {
   
   #options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
   
-  if (length(country)!=1) {
+  if (length(country) != 1) {
     stop("To many country selected. Please choose one country")
   }
   
-  if (length(date)!=1) {
+  if (length(date) != 1) {
     stop("You can check available nearest stations for one day. Please chenge selection")
     
   }  # initalizing empty data frame for storing results:
@@ -41,10 +41,10 @@ stations_ogimet = function(country = "United+Kingdom", date = Sys.Date(), add_ma
    
    
    # run only if downloaded file is valid
-   if(!is.na(file.size(temp)) & (file.size(temp) > 0)) {
+   if (!is.na(file.size(temp)) & (file.size(temp) > 0)) {
    
    a = readLines(temp)
-   a = paste(a, sep="", collapse="") 
+   a = paste(a, sep = "", collapse = "")
   
   b = strsplit(a, "Decoded synops since")
   
@@ -105,8 +105,8 @@ stations_ogimet = function(country = "United+Kingdom", date = Sys.Date(), add_ma
   
 if (!is.null(res)) {
   
-  if(add_map == TRUE){
-    if (!requireNamespace("maps", quietly = TRUE)){
+  if (add_map == TRUE) {
+    if (!requireNamespace("maps", quietly = TRUE)) {
       stop("package maps required, please install it first")
     }
     # plot labels a little bit higher...
@@ -114,15 +114,12 @@ if (!is.null(res)) {
     addfactor = ifelse(addfactor > 0.2, 0.2, addfactor)
     addfactor = ifelse(addfactor < 0.05, 0.05, addfactor)
     
-    graphics::plot(res$lon, res$lat, col='red', pch=19, xlab = 'longitude', ylab = 'latitude')
+    graphics::plot(res$lon, res$lat, col = 'red', pch = 19, xlab = 'longitude', ylab = 'latitude')
     graphics::text(res$lon, res$lat + addfactor, labels = res$station_names,
                    col = 'grey70', cex = 0.6)
     maps::map(add = TRUE)
   }
-  
-} # end of checking if res is NULL
-  
-  return(res)
-  
-}
 
+} # end of checking if res is NULL
+  return(res)
+}

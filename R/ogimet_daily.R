@@ -1,6 +1,7 @@
 #' Scrapping daily meteorological (Synop) data from the Ogimet webpage
 #'
-#' Downloading daily (meteorological) data from the Synop stations available in the https://www.ogimet.com/ repository
+#' Downloading daily (meteorological) data from the Synop stations available in the https://www.ogimet.com/ repository.
+#' The data are processed only if temperature or precipitation fields are present.
 #'
 #' @param date start and finish of date (e.g., date = c("2018-05-01","2018-07-01") )
 #' @param coords add geographical coordinates of the station (logical value TRUE or FALSE)
@@ -14,15 +15,15 @@
 #' @keywords internal
 #'
 #' @examples \donttest{
-#'   # downloading data for Poznan-Lawica
-#'   poznan = ogimet_daily(station = 12330,
-#'       date = c("2019-01-01", "2019-03-31"),
-#'       coords = TRUE)
-#'   head(poznan)
+#'   ## downloading data for Poznan-Lawica
+#'   # poznan = ogimet_daily(station = 12330, coords = TRUE)
 #' }
 #'
 
-ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, station = c(12326, 12330), hour = 6, fill_empty = TRUE) {
+ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), 
+                        coords = FALSE, 
+                        station = c(12326, 12330), 
+                        hour = 6) {
   
   #options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
 
@@ -61,33 +62,32 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
       "VisKm" = character(),
       stringsAsFactors = FALSE
     )
-
   
-  for (station_nr in station){
+  for (station_nr in station) {
     print(station_nr)
     
     # adding progress bar if at least 3 iterations are needed
-    if (length(dates) * length(station) >= 3){
+    if (length(dates) * length(station) >= 3) {
       pb = txtProgressBar(min = 0, max = length(dates) * length(station) - 1, style = 3)
     } 
 
     for (i in length(dates):1) {
       # update progressbar:
-      if (length(dates) >=3 ) paste(setTxtProgressBar(pb, abs(length(dates)*length(station) - i)),"\n")
+      if (length(dates) >= 3 ) paste(setTxtProgressBar(pb, abs(length(dates)*length(station) - i)), "\n")
       
       year = format(dates[i], "%Y")
       month = format(dates[i], "%m")
       day = format(dates[i], "%d")
       ndays = day
-      linkpl2 = paste("https://www.ogimet.com/cgi-bin/gsynres?lang=en&ind=", station_nr, "&ndays=32&ano=", year, "&mes=", month, "&day=", day, "&hora=", hour,"&ord=REV&Send=Send", sep="")
-      if(month == 1) linkpl2 = paste("https://www.ogimet.com/cgi-bin/gsynres?lang=en&ind=", station_nr, "&ndays=32&ano=", year, "&mes=", month, "&day=", day, "&hora=", hour, "&ord=REV&Send=Send", sep="")
+      linkpl2 = paste("https://www.ogimet.com/cgi-bin/gsynres?lang=en&ind=", station_nr, "&ndays=32&ano=", year, "&mes=", month, "&day=", day, "&hora=", hour,"&ord=REV&Send=Send", sep = "")
+      if (month == 1) linkpl2 = paste("https://www.ogimet.com/cgi-bin/gsynres?lang=en&ind=", station_nr, "&ndays=32&ano=", year, "&mes=", month, "&day=", day, "&hora=", hour, "&ord=REV&Send=Send", sep = "")
       
       
       temp = tempfile()
       test_url(linkpl2, temp)
       
       # run only if downloaded file is valid
-      if(!is.na(file.size(temp)) & (file.size(temp) > 0)) { 
+      if (!is.na(file.size(temp)) & (file.size(temp) > 0)) { 
         
         a = readHTMLTable(temp, stringsAsFactors = FALSE)
         unlink(temp)
@@ -96,12 +96,12 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
         
         # check no data situations:
         tst = sum(grepl(x = b[[1]], pattern = "No valid data"))
-        if(tst) {
+        if (tst) {
           message(paste(b[[1]], dates[i]))
         } else {
         
-          if (sum(b[1,]=="Dailyweather summary", na.rm = TRUE)) {
-            b = b[,1:(length(b) - 8)]
+          if (sum(b[1, ] == "Dailyweather summary", na.rm = TRUE)) {
+            b = b[, 1:(length(b) - 8)]
           } else {
             b = b[, 1:length(b)]
           }
@@ -114,13 +114,13 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
           } 
           
           # all columns are empty:
-          if (all(is.na(test[2,]))) {
+          if (all(is.na(test[2, ]))) {
             message("no values in column names")
           } else {
             
             # number of columns contain weird/non-standard data (e.g. only wind speed)
-            if(ncol(test) <= 4){
-              warning(paste0("Mandatory meteorological parameters (i.e. Temperature or precipitations) are not present. \nCheck content of the current URL:\n",
+            if (ncol(test) <= 4) {
+              stop(paste0("Mandatory meteorological parameters (i.e. Temperature or precipitations) are not present. \nCheck content of the data using current URL:\n",
                              linkpl2))
             }
             
@@ -133,11 +133,9 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
                 paste(test[1, 5], test[2, 4:6], sep = "_"),
                 test[1, c(6:(length(test) - 4))]
               ))
-            } else if ((length(test[2, !is.na(test[2, ])]) == 2 &
-                        test[2, 2] == "Int.")) {
+            } else if ((length(test[2, !is.na(test[2, ])]) == 2 & test[2, 2] == "Int.")) {
               names_col = unlist(c(test[1, 1:2], paste(test[1, 3], test[2, 1:2], sep = "_"), test[1, c(4:(length(test) - 1))]))
-            } else if ((length(test[2, !is.na(test[2, ])]) == 5 &
-                        test[2, 5] == "Int.")) {
+            } else if ((length(test[2, !is.na(test[2, ])]) == 5 & test[2, 5] == "Int.")) {
               names_col = unlist(c(
                 test[1, 1],
                 paste(test[1, 2], test[2, 1:3], sep = "_"),
@@ -145,8 +143,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
                 paste(test[1, 5], test[2, 4:5], sep = "_"),
                 test[1, c(6:(length(test) - 3))]
               ))
-            } else if ((length(test[2, !is.na(test[2, ])]) == 3 &
-                        test[2, 2] == "Int.")) {
+            } else if ((length(test[2, !is.na(test[2, ])]) == 3 & test[2, 2] == "Int.")) {
               names_col = unlist(c(
                 test[1, 1:2],
                 paste(test[1, 3], test[2, 1:3], sep = "_"),
@@ -155,9 +152,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
             } else {
               names_col = "Error_column"
             }
-          
-          
-          
+
           names_col <-
             gsub("[^A-Za-z0-9]",
                  "",
@@ -177,7 +172,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
             data_station = rbind(data_station, b)  # joining data
     
           } else { # when b have more columns then data_station
-           if(nrow(data_station) == 0){
+           if (nrow(data_station) == 0) {
              data_station = b
             } else {
               # adding missing columns
@@ -189,8 +184,8 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
           # cat(paste(year,month,"\n"))
           # coords można lepiej na samym koncu dodać kolumne
           # wtedy jak zmienia się lokalizacja na dacie to tutaj tez
-          if (coords){
-            coord = a[[1]][2,1]
+          if (coords) {
+            coord = a[[1]][2, 1]
             data_station["Lon"] = get_coord_from_string(coord, "Longitude")
             data_station["Lat"] = get_coord_from_string(coord, "Latitude")
           }
@@ -205,7 +200,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
 
     }# end of looping for stations
     
-    if (nrow(data_station) > 0){
+    if (nrow(data_station) > 0) {
       
       data_station =  data_station[!duplicated(data_station), ]
       
@@ -223,7 +218,7 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
                                                             "TotClOct", "lowClOct" ,"VisKm","station_ID")], as.numeric)))
     
     # changing order of columns and removing blank records:
-    if(coords){
+    if (coords) {
       ord1 = c("station_ID", "Lon", "Lat", "Date", "TemperatureCAvg")
       ord1 = c(ord1, setdiff(names(data_station), c("station_ID", "Lon", "Lat", "Date", "TemperatureCAvg")))
       data_station = data_station[, ord1]
@@ -243,5 +238,4 @@ ogimet_daily = function(date = c(Sys.Date() - 30, Sys.Date()), coords = FALSE, s
   
   
   return(data_station)
-
 }

@@ -27,7 +27,8 @@ nearest_stations_ogimet(
 \item{...}{extra arguments to be provided to the \code{\link[graphics:plot.default]{graphics::plot()}} function (only if add_map = TRUE)}
 }
 \value{
-A data.frame with number of nearest station according to given point columns describing stations parameters (e.g.  ID station, distance from point,geografic coordinates) where each row represent a measurement,
+A data.frame with number of nearest station according to given point columns describing stations parameters
+(e.g. ID station, distance from point in km, geographic coordinates, etc.). Each row represent a measurement,
 each station which has a measurements on selected date. If \code{add_map = TRUE} additional map of downloaded data is added.
 }
 \description{

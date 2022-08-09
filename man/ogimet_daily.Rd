@@ -8,8 +8,7 @@ ogimet_daily(
   date = c(Sys.Date() - 30, Sys.Date()),
   coords = FALSE,
   station = c(12326, 12330),
-  hour = 6,
-  fill_empty = TRUE
+  hour = 6
 )
 }
 \arguments{
@@ -22,15 +21,13 @@ ogimet_daily(
 \item{hour}{time for which the daily raport is generated. Set default as hour = 6}
 }
 \description{
-Downloading daily (meteorological) data from the Synop stations available in the https://www.ogimet.com/ repository
+Downloading daily (meteorological) data from the Synop stations available in the https://www.ogimet.com/ repository.
+The data are processed only if temperature or precipitation fields are present.
 }
 \examples{
 \donttest{
-  # downloading data for Poznan-Lawica
-  poznan = ogimet_daily(station = 12330,
-      date = c("2019-01-01", "2019-03-31"),
-      coords = TRUE)
-  head(poznan)
+  ## downloading data for Poznan-Lawica
+  # poznan = ogimet_daily(station = 12330, coords = TRUE)
 }
 
 }

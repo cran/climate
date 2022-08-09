@@ -3,7 +3,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-options(scipen=999)
+options(scipen = 999)
 
 ## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE----------
 library(climate)
@@ -36,7 +36,7 @@ df = meteo_noaa_hourly(station = "010080-99999",
 
 ## ----windrose2, echo=FALSE----------------------------------------------------
 library(knitr)
-kable(head(df[,c(-2:-5)],10), caption = "Examplary data frame of meteorological data.")
+kable(head(df[,c(-2:-5)], 10), caption = "Examplary data frame of meteorological data.")
 
 ## ----sonda,eval=T, fig.width=7, fig.height=7, fig.fullwidth=TRUE--------------
 library(climate)
