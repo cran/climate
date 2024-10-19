@@ -9,18 +9,24 @@
 #' (default status = FALSE - i.e. the status columns are deleted)
 #' @param coords add coordinates of the station (logical value TRUE or FALSE)
 #' @param station name or ID of meteorological station(s).
-#' It accepts names (characters in CAPITAL LETTERS) or stations' IDs (numeric)
+#' It accepts names (characters in CAPITAL LETTERS) or stations' IDs (numeric).
+#' Please note that station names may change over time and thus sometimes 2 names 
+#' are required in some cases, e.g. `c("POZNAŃ", "POZNAŃ-ŁAWICA")`.
 #' @param col_names three types of column names possible: "short" - default,
 #' values with shorten names, "full" - full English description,
 #' "polish" - original names in the dataset
+#' @param allow_failure logical - whether to proceed or stop on failure. 
+#' By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE
 #' @param ... other parameters that may be passed to the
 #' 'shortening' function that shortens column names
 #' @importFrom XML readHTMLTable
 #' @importFrom utils unzip read.csv
 #' @importFrom data.table fread
 #' @export
+#' @return meteorological data with monthly summaries
 #'
-#' @examples \donttest{
+#' @examples 
+#' \donttest{
 #'   monthly = meteo_imgw_monthly(rank = "climate", year = 1969)
 #'   head(monthly)
 #'
@@ -28,11 +34,6 @@
 #'   monthly2 = meteo_imgw_monthly(rank = "synop", year = 2018,
 #'          col_names = "full")
 #'   head(monthly2)
-#'
-#'   # please note that station names may change over time
-#'   # and thus 2 names are required in some cases:
-#'   # df = meteo_imgw_monthly(rank = 'synop', year = 1991:2000,
-#'   #         coords = TRUE, station = c("POZNAŃ","POZNAŃ-ŁAWICA"))
 #' }
 #'
 meteo_imgw_monthly = function(rank = "synop",
@@ -40,7 +41,44 @@ meteo_imgw_monthly = function(rank = "synop",
                               status = FALSE,
                               coords = FALSE,
                               station = NULL,
-                              col_names = "short", ...) {
+                              col_names = "short", 
+                              allow_failure = TRUE,
+                              ...) {
+
+  if (allow_failure) {
+    tryCatch(meteo_imgw_monthly_bp(rank,
+                                   year,
+                                   status,
+                                   coords,
+                                   station,
+                                   col_names,
+                                   ...),
+             error = function(e){
+               message(paste("Potential error(s) found. Problems with downloading data.\n",
+                             "\rRun function with argument allow_failure = FALSE",
+                             "to see more details"))})
+    
+  } else {
+    meteo_imgw_monthly_bp(rank,
+                          year,
+                          status,
+                          coords,
+                          station,
+                          col_names,
+                          ...)
+  }
+}
+
+#' @noRd
+#' @keywords internal
+meteo_imgw_monthly_bp = function(rank,
+                                 year,
+                                 status,
+                                 coords,
+                                 station,
+                                 col_names,
+                                 ...) {
+
   translit = check_locale()
   base_url = "https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
   interval_pl = "miesieczne"
@@ -64,7 +102,6 @@ meteo_imgw_monthly = function(rank = "synop",
   all_data = vector("list", length = length(catalogs))
 
   for (i in seq_along(catalogs)) {
-    # print(i)
     catalog = gsub(catalogs[i], pattern = "/", replacement = "")
 
     if (rank == "synop") {
@@ -90,7 +127,7 @@ meteo_imgw_monthly = function(rank = "synop",
     if (translit) {
       data1 = as.data.frame(data.table::fread(cmd = paste("iconv -f CP1250 -t ASCII//TRANSLIT", file1)))
     } else {
-      data1 = read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")
+      data1 = suppressWarnings(read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250"))
     }
 
     colnames(data1) = meta[[1]]$parameters
@@ -131,7 +168,11 @@ meteo_imgw_monthly = function(rank = "synop",
   all_data = all_data[all_data$Rok %in% year, ]
 
   if (coords) {
-    all_data = merge(climate::imgw_meteo_stations, all_data, by.x = "id", by.y = "Kod stacji", all.y = TRUE)
+    all_data = merge(climate::imgw_meteo_stations[, 1:3], 
+                     all_data, 
+                     by.x = "id", 
+                     by.y = "Kod stacji", 
+                     all.y = TRUE)
   }
 
   # add rank
@@ -165,6 +206,7 @@ meteo_imgw_monthly = function(rank = "synop",
 
   # adding option to shorten columns and removing duplicates:
   all_data = meteo_shortening_imgw(all_data, col_names = col_names, ...)
+  rownames(all_data) = NULL
 
   return(all_data) # clipping to selected years only
 }

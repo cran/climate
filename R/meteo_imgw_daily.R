@@ -9,22 +9,22 @@
 #' (default status = FALSE - i.e. the status columns are deleted)
 #' @param coords add coordinates of the station (logical value TRUE or FALSE)
 #' @param station name of meteorological station(s).
-#' It accepts names (characters in CAPITAL LETTERS); stations' IDs (numeric) are
-#' no longer valid
+#' It accepts names (characters in CAPITAL LETTERS); Stations' IDs (numeric) are no longer valid
 #' @param col_names three types of column names possible:
 #' "short" - default, values with shorten names,
 #' "full" - full English description,
 #' "polish" - original names in the dataset
+#' @param allow_failure logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE
 #' @param ... other parameters that may be passed to the 'shortening' function that
 #' shortens column names
 #' @importFrom XML readHTMLTable
 #' @importFrom utils download.file unzip read.csv
 #' @importFrom data.table fread
+#' @returns data.frame with a daily meteorological measurements
 #' @export
 #'
 #' @examples \donttest{
 #'   daily = meteo_imgw_daily(rank = "climate", year = 2000)
-#'   head(daily)
 #' }
 #'
 
@@ -33,11 +33,45 @@ meteo_imgw_daily = function(rank = "synop",
                             status = FALSE,
                             coords = FALSE,
                             station = NULL,
-                            col_names = "short", ...) {
+                            col_names = "short", 
+                            allow_failure = TRUE,
+                            ...) {
+  
+  if (allow_failure) {
+    tryCatch(meteo_imgw_daily_bp(rank,
+                                 year,
+                                 status,
+                                 coords,
+                                 station,
+                                 col_names),
+             error = function(e){
+               message(paste("Potential error(s) found. Problems with downloading data.\n",
+                             "\rRun function with argument allow_failure = FALSE",
+                             "to see more details"))})
+  } else {
+    meteo_imgw_daily_bp(rank,
+                        year,
+                        status,
+                        coords,
+                        station,
+                        col_names,
+                        ...)
+  }
+}
+
+#' @keywords internal
+#' @noRd
+meteo_imgw_daily_bp = function(rank,
+                               year,
+                               status,
+                               coords,
+                               station,
+                               col_names,
+                               ...) {
 
   translit = check_locale()
   base_url = "https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
-  interval = "daily" # to mozemy ustawic na sztywno
+  interval = "daily"
   interval_pl = "dobowe"
   meta = meteo_metadata_imgw(interval = "daily", rank = rank)
   rank_pl = switch(rank, synop = "synop", climate = "klimat", precip = "opad")
@@ -55,7 +89,7 @@ meteo_imgw_daily = function(rank = "synop",
                                split = "_")
   years_in_catalogs = lapply(years_in_catalogs, function(x) x[1]:x[length(x)])
   ind = lapply(years_in_catalogs, function(x) sum(x %in% year) > 0)
-  catalogs = catalogs[unlist(ind)] # to sa nasze prawdziwe catalogs do przemielenia
+  catalogs = catalogs[unlist(ind)]
 
   all_data = NULL
 
@@ -77,7 +111,6 @@ meteo_imgw_daily = function(rank = "synop",
         temp = tempfile()
         temp2 = tempfile()
         test_url(addresses_to_download[j], temp)
-        #download.file(addresses_to_download[j], temp)
         unzip(zipfile = temp, exdir = temp2)
         file1 = paste(temp2, dir(temp2), sep = "/")[1]
         if (translit) {
@@ -85,28 +118,28 @@ meteo_imgw_daily = function(rank = "synop",
         } else {
           data1 = read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")
         }
-
         colnames(data1) = meta[[1]]$parameters
 
         file2 = paste(temp2, dir(temp2), sep = "/")[2]
         if (translit) {
-          data2 = as.data.frame(data.table::fread(cmd = paste("iconv -f CP1250 -t ASCII//TRANSLIT", file2)))
+          data2 = data.table::fread(cmd = paste("iconv -f CP1250 -t ASCII//TRANSLIT", file2))
         } else {
-          data2 = read.csv(file2, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")
+          data2 = suppressWarnings(read.csv(file2, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250"))
         }
         colnames(data2) = meta[[2]]$parameters
+        unlink(c(temp, temp2))
 
-        # usuwa statusy
+        # remove statuses if not needed:
         if (status == FALSE) {
           data1[grep("^Status", colnames(data1))] = NULL
           data2[grep("^Status", colnames(data2))] = NULL
         }
 
-        unlink(c(temp, temp2))
-
-        # moja proba z obejsciem dla wyboru kodu
-        ttt = merge(data1, data2, by = c("Kod stacji", "Rok", "Miesiac", "Dzien"),
-                    all.x = TRUE)
+        ttt = base::merge(data1,
+                          data2,
+                          by = c("Kod stacji", "Rok", "Miesiac", "Dzien"),
+                          all.x = TRUE)
+        
         ttt = ttt[order(ttt$`Nazwa stacji.x`, ttt$Rok, ttt$Miesiac, ttt$Dzien), ]
         ### ta część kodu powtarza sie po dużej petli od rank
         if (!is.null(station)) {
@@ -115,11 +148,8 @@ meteo_imgw_daily = function(rank = "synop",
         } else {
           all_data[[length(all_data) + 1]] = ttt
         }
-        # koniec proby z obejsciem
-
-      } # koniec petli po zipach do pobrania
-
-    } # koniec if'a dla synopa
+      } # end of looping for zip archives
+    } # end of if statement for SYNOP stations
 
     ######################
     ###### KLIMAT: #######
@@ -134,9 +164,6 @@ meteo_imgw_daily = function(rank = "synop",
       ind = grep(readHTMLTable(folder_contents)[[1]]$Name, pattern = "zip")
       files = as.character(readHTMLTable(folder_contents)[[1]]$Name[ind])
       addresses_to_download = paste0(address, files)
-      # w tym miejscu trzeba przemyslec fragment kodu
-      # do dodania dla pojedynczej stacji jesli tak sobie zazyczy uzytkownik:
-      # na podstawie zawartosci obiektu files
 
       for (j in seq_along(addresses_to_download)) {
         temp = tempfile()
@@ -170,11 +197,11 @@ meteo_imgw_daily = function(rank = "synop",
                                                  data2,
                                                  by = c("Kod stacji", "Rok", "Miesiac", "Dzien"),
                                                  all.x = TRUE)
-      } # koniec petli po zipach do pobrania
-    } # koniec if'a dla klimatu
+      } # end of looping for zip files
+    } # end of if statement for climate stations
 
-    ######################
-    ######## OPAD: #######
+    ########################
+    ######## PRECIP: #######
     if (rank == "precip") {
       address = paste0(base_url, "dane_meteorologiczne/dobowe/opad",
                         "/", catalog, "/")
@@ -207,26 +234,25 @@ meteo_imgw_daily = function(rank = "synop",
 
         unlink(c(temp, temp2))
         all_data[[length(all_data) + 1]] = data1
-      } # koniec petli po zipach do pobrania
-    } # koniec if'a dla klimatu
-
-  } # koniec petli po glownych catalogach danych dobowych
+      } # end of loop for zip files
+    } # end of if statement for climate stations
+  } # end of looping over catalogs
 
   all_data = do.call(rbind, all_data)
 
   if (coords) {
-    all_data = merge(climate::imgw_meteo_stations,
+    all_data = merge(climate::imgw_meteo_stations[, 1:3],
                      all_data,
                      by.x = "id",
                      by.y = "Kod stacji",
                      all.y = TRUE)
   }
 
-  # dodaje rank
+  # add station rank:
   rank_code = switch(rank, synop = "SYNOPTYCZNA", climate = "KLIMATYCZNA", precip = "OPADOWA")
   all_data = cbind(data.frame(rank_code = rank_code), all_data)
 
-  all_data = all_data[all_data$Rok %in% year, ] # przyciecie tylko do wybranych lat gdyby sie pobralo za duzo
+  all_data = all_data[all_data$Rok %in% year, ] # clip only to selected years
 
   #station selection
   if (!is.null(station)) {
@@ -255,15 +281,16 @@ meteo_imgw_daily = function(rank = "synop",
     }
   }
 
-  # sortowanie w zaleznosci od nazw kolumn - raz jest "kod stacji", raz "id"
+  # sort output
   if (sum(grepl(x = colnames(all_data), pattern = "Kod stacji"))) {
     all_data = all_data[order(all_data$`Kod stacji`, all_data$Rok, all_data$Miesiac, all_data$Dzien), ]
   } else {
     all_data = all_data[order(all_data$id, all_data$Rok, all_data$Miesiac, all_data$Dzien), ]
   }
 
-  # # dodanie opcji  dla skracania kolumn i usuwania duplikatow:
+  # remove duplicates and shorten colnames
   all_data = meteo_shortening_imgw(all_data, col_names = col_names, ...)
+  rownames(all_data) = NULL
 
   return(all_data)
 }

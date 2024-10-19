@@ -7,13 +7,8 @@
 #' @format The returned object is the geographic coordinates using WGS84 (EPSG:4326) in decimal format.
 #' Negative values mean western or southern Hemisphere
 #' @keywords internal
-#'
-#' @examples
-#' \donttest{
-#'  txt = "12120:   Leba (Poland)\nLatitude: 54-45N    Longitude: 017-32E    Altitude: 2 m."
-#'  climate:::get_coord_from_string(txt, pattern = "Latitude")
-#' }
-#'
+#' @noRd
+
 get_coord_from_string = function(txt, pattern = "Longitude") {
   tt = gregexpr(pattern, txt)
   start = tt[[1]][1] + attributes(tt[[1]])$match.length + 1
@@ -27,7 +22,7 @@ get_coord_from_string = function(txt, pattern = "Longitude") {
   wsp = suppressWarnings(as.numeric(tmp)[1] + (as.numeric(tmp)[2] * 5 / 3) / 100)
 
   if (hemisphere %in% c("W", "S")) {
-    wsp = wsp * -1
+    wsp = wsp*-1
   }
 return(wsp)
 }

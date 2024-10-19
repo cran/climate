@@ -5,13 +5,8 @@
 #' @param pattern 6h-12h-24h precipitation pattern to obtain written as: "/6h", "/12h" , "/24h" (see examples)
 #' 
 #' @keywords internal
-#'
-#' @examples
-#' \donttest{
-#'  df = climate:::ogimet_hourly(station = 12330)
-#'  climate:::precip_split(df$Precmm, pattern = "/12") # to get 12h precipitation amounts
-#' }
-#'
+#' @noRd
+
 precip_split = function(precip,  pattern = "/12") {
   b = strsplit(precip, "h", fixed = TRUE)
   b = lapply(b, function(x) x[grepl(x, pattern = pattern, fixed = TRUE)])

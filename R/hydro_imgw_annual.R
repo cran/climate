@@ -12,24 +12,56 @@
 #' "short" - default, values with shorten names,
 #' "full" - full English description,
 #' "polish" - original names in the dataset
+#' @param allow_failure logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE
 #' @param ... other parameters that may be passed to the 'shortening' function that shortens column names
 #' @importFrom XML readHTMLTable
 #' @importFrom utils download.file unzip read.csv
 #' @importFrom data.table fread
 #' @export
+#' @returns data.frame with historical hydrological data for the semi-annual and annual period
 #' @examples
 #' \donttest{
-#'   yearly = hydro_imgw_annual(year = 2000, value = "H", station = "ANNOPOL")
-#'   head(yearly)
+#' hydro_yearly = hydro_imgw_annual(year = 2000, value = "H", station = "ANNOPOL")
 #' }
 hydro_imgw_annual = function(year,
                              coords = FALSE,
                              value = "H",
                              station = NULL,
-                             col_names = "short", ...) {
- # options(RCurlOptions = list(ssl.verifypeer = FALSE)) # required on windows for RCurl
-  translit = check_locale()
+                             col_names = "short", 
+                             allow_failure = TRUE,
+                             ...) {
+  
+  if (allow_failure) {
+    tryCatch(hydro_imgw_annual_bp(year,
+                                  coords,
+                                  value,
+                                  station,
+                                  col_names, 
+                                  ...),
+             error = function(e){
+               message(paste("Problems with downloading data.",
+                             "Run function with argument allow_failure = FALSE",
+                             "to see more details"))})
+  } else {
+    hydro_imgw_annual_bp(year,
+                         coords,
+                         value,
+                         station,
+                         col_names, 
+                         ...)
+  }
+}
 
+#' @keywords internal
+#' @noRd
+hydro_imgw_annual_bp = function(year = year,
+                                coords = coords,
+                                value = value,
+                                station = station,
+                                col_names = col_names,
+                                ...) {
+  
+  translit = check_locale()
   base_url = "https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/dane_hydrologiczne/"
   interval = "semiannual_and_annual"
   interval_pl = "polroczne_i_roczne"
@@ -41,7 +73,7 @@ hydro_imgw_annual = function(year,
   ind = grep(readHTMLTable(a)[[1]]$Name, pattern = "/")
   catalogs = as.character(readHTMLTable(a)[[1]]$Name[ind])
   catalogs = gsub(x = catalogs, pattern = "/", replacement = "")
-  # less files to read:
+
   catalogs = catalogs[catalogs %in% as.character(year)]
   if (length(catalogs) == 0) {
     stop("Selected year(s) is/are not available in the database.", call. = FALSE)
@@ -50,10 +82,7 @@ hydro_imgw_annual = function(year,
 
   all_data = vector("list", length = length(catalogs))
   for (i in seq_along(catalogs)) {
-    # i = 1
     catalog = catalogs[i]
-    #print(i)
-
     address = paste0(base_url, interval_pl, "/", catalog, "/polr_", value, "_", catalog, ".zip")
 
     temp = tempfile()
@@ -73,19 +102,19 @@ hydro_imgw_annual = function(year,
     all_data[[i]] = data1
   }
   all_data = do.call(rbind, all_data)
-  # ten sam warunek braku danych lub obserwacji dla wszytkich wartosci
   all_data[all_data == 99999.999] = NA
   all_data = all_data[, !duplicated(colnames(all_data))]
 
   # coords
   if (coords) {
-    all_data = merge(climate::imgw_hydro_stations, all_data, by.x = "id", by.y = "Kod stacji", all.y = TRUE)
+    all_data = merge(climate::imgw_hydro_stations, all_data, by.x = "id", by.y = "Nazwa rzeki/jeziora", all.y = TRUE)
   }
   #station selection
   if (!is.null(station)) {
     if (is.character(station)) {
       all_data = all_data[substr(all_data$`Nazwa stacji`, 1, nchar(station)) == station, ]
       if (nrow(all_data) == 0) {
+        
         stop("Selected station(s) is not available in the database.", call. = FALSE)
       }
     } else if (is.numeric(station)) {

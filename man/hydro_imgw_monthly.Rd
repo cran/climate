@@ -9,6 +9,7 @@ hydro_imgw_monthly(
   coords = FALSE,
   station = NULL,
   col_names = "short",
+  allow_failure = TRUE,
   ...
 )
 }
@@ -25,7 +26,12 @@ It accepts names (characters in CAPITAL LETTERS) or stations' IDs (numeric)}
 "full" - full English description,
 "polish" - original names in the dataset}
 
+\item{allow_failure}{logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE}
+
 \item{...}{other parameters that may be passed to the 'shortening' function that shortens column names}
+}
+\value{
+data.frame with historical hydrological data for the monthly summaries
 }
 \description{
 Downloading monthly hydrological data from the danepubliczne.imgw.pl collection
@@ -33,7 +39,6 @@ Downloading monthly hydrological data from the danepubliczne.imgw.pl collection
 \examples{
 \donttest{
   monthly = hydro_imgw_monthly(year = 2000)
-  head(monthly)
 }
 
 }

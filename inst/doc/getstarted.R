@@ -3,98 +3,115 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-options(scipen = 999)
+old <- options(scipen = 999)
 
 ## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE----------
 library(climate)
-ns = nearest_stations_ogimet(country ="United+Kingdom",
-                             point = c(-4, 56),
+ns = nearest_stations_ogimet(country = c("United Kingdom", "France"),
+                             point = c(-3, 50),
                              no_of_stations = 50, 
                              add_map = TRUE)
-head(ns)
-#>    wmo_id       station_names       lon       lat alt  distance [km]
-#> 29  03144         Strathallan  -3.733348 56.31667  35      46.44794
-#> 32  03155           Drumalbin  -3.733348 55.61668 245      52.38975
-#> 30  03148           Glen Ogle  -4.316673 56.41667 564      58.71862
-#> 27  03134   Glasgow Bishopton  -4.533344 55.90002  59      60.88179
-#> 35  03166 Edinburgh Gogarbank  -3.350007 55.93335  57      73.30942
-#> 28  03136      Prestwick RNAS  -4.583345 55.51668  26      84.99537
 
-## ----stations, eval=T, fig.width=7, fig.height=7, fig.fullwidth=T-------------
+## ----stations-2, eval=T-------------------------------------------------------
+if (is.data.frame(ns)) {
+ knitr::kable(head(ns, 15))
+}
+
+## ----stations-3, eval=T, fig.width=7, fig.height=7, fig.fullwidth=T-----------
 library(climate)
 PL = stations_ogimet(country = "Poland", add_map = TRUE)
-head(PL)
 
-## ----windrose,eval=T----------------------------------------------------------
-# downloading data with NOAA service:
-df = meteo_noaa_hourly(station = "010080-99999", 
-                       year = sample(2000:2020, 1))
+if (is.data.frame(PL)) {
+    knitr::kable(head(PL))
+}
 
-# downloading the same data with Ogimet.com (example for 2019):
-# df <- meteo_ogimet(interval = "hourly", date = c("2019-01-01", "2019-12-31"),
-#                   station = c("01008"))
+## ----noaa_svalbard, include=FALSE---------------------------------------------
+df = readRDS(system.file("extdata/vignettes/svalbard_noaa.rds", package = "climate"))
 
-## ----windrose2, echo=FALSE----------------------------------------------------
-library(knitr)
-kable(head(df[,c(-2:-5)], 10), caption = "Examplary data frame of meteorological data.")
+## ----windrose,eval=F----------------------------------------------------------
+#  # downloading data with NOAA service:
+#  df = meteo_noaa_hourly(station = "010080-99999", year = 2016)
+#  
+#  # You can also download the same (but more granular) data with Ogimet.com (example for year 2016):
+#  # df = meteo_ogimet(interval = "hourly",
+#  #                   date = c("2016-01-01", "2016-12-31"),
+#  #                   station = c("01008"))
 
-## ----sonda,eval=T, fig.width=7, fig.height=7, fig.fullwidth=TRUE--------------
+## ----noaa-kable,eval=T--------------------------------------------------------
+knitr::kable(head(df))
+
+## ----sonda-read, eval=T, include=F, echo=F------------------------------------
 library(climate)
 data("profile_demo")
-# same as:
-# profile_demo <- sounding_wyoming(wmo_id = 12120,
-#                                  yy = 2000,
-#                                  mm = 3,
-#                                  dd = 23,
-#                                  hh = 0)
-df2 <- profile_demo[[1]] 
+df2 = profile_demo[[1]] 
 colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 
+## ----sonda, eval=F, include=T-------------------------------------------------
+#  profile_demo <- sounding_wyoming(wmo_id = 12120,
+#                                   yy = 2000,
+#                                   mm = 3,
+#                                   dd = 23,
+#                                   hh = 0)
+#  df2 = profile_demo[[1]]
+#  colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
+
 ## ----sonda2, echo=FALSE-------------------------------------------------------
-library(knitr)
-kable(head(df2,10), caption = "Examplary data frame of sounding preprocessing")
+knitr::kable(head(df2, 10), caption = "Exemplary data frame of sounding preprocessing")
 
-## ----imgw_meteo, fig.width=7, fig.height=7, fig.fullwidth=TRUE, error=TRUE----
-library(climate)
-library(dplyr)
+## ----imgw_meteo, include=FALSE------------------------------------------------
+df = readRDS(system.file("extdata/vignettes/leba_monthly.rds", package = "climate"))
 
-df = meteo_imgw(interval = "monthly", rank = "synop", year = 1991:2019, station = "ŁEBA") 
-# please note that sometimes 2 names are used for the same station in different years
+## ----imgw_meteo-2, eval=FALSE, include=TRUE-----------------------------------
+#  library(climate)
+#  df = meteo_imgw(interval = "monthly", rank = "synop", year = 1991:2000, station = "ŁEBA")
+#  # please note that sometimes 2 names are used for the same station in different years
 
-df2 = select(df, station:t2m_mean_mon, rr_monthly)
+## ----imgw_meteo-3, fig.width=7, fig.height=7, fig.fullwidth=TRUE, error=TRUE, eval=TRUE, include=TRUE----
+suppressMessages(library(dplyr))
+df2 = dplyr::select(df, station:t2m_mean_mon, rr_monthly)
 
 monthly_summary = df2 %>% 
-  group_by(mm) %>% 
-  summarise(tmax = mean(tmax_abs, na.rm = TRUE), 
-            tmin = mean(tmin_abs, na.rm = TRUE),
-            tavg = mean(t2m_mean_mon, na.rm = TRUE), 
-            precip = sum(rr_monthly) / n_distinct(yy))            
+  dplyr::group_by(mm) %>% 
+  dplyr::summarise(tmax = mean(tmax_abs, na.rm = TRUE), 
+                   tmin = mean(tmin_abs, na.rm = TRUE),
+                   tavg = mean(t2m_mean_mon, na.rm = TRUE), 
+                   precip = sum(rr_monthly) / n_distinct(yy))            
 
-monthly_summary = as.data.frame(t(monthly_summary[, c(5,2,3,4)])) 
+monthly_summary = as.data.frame(t(monthly_summary[, c(5, 2, 3, 4)])) 
 monthly_summary = round(monthly_summary, 1)
 colnames(monthly_summary) = month.abb
 
+## ----imgw_meteo2, echo=FALSE, error=TRUE--------------------------------------
+knitr::kable(head(monthly_summary), 
+             caption = "Exemplary data frame of meteorological preprocessing.")
 
-## ----imgw_meto2, echo=FALSE, error=TRUE---------------------------------------
-library(knitr)
-kable(head(monthly_summary), caption = "Examplary data frame of meteorological preprocessing.")
+## ----data, eval=TRUE, include=FALSE, echo=FALSE-------------------------------
+h = readRDS(system.file("extdata/vignettes/hydro_monthly.rds", package = "climate"))
 
-## ----data---------------------------------------------------------------------
-library(climate)
-library(dplyr)
-library(tidyr)
-h = hydro_imgw(interval = "monthly", year = 2001:2005, coords = TRUE)
-head(h)
+## ----data-2, eval=FALSE, include=TRUE-----------------------------------------
+#  library(climate)
+#  library(dplyr)
+#  library(tidyr)
+#  h = hydro_imgw(interval = "monthly", year = 2001:2002, coords = TRUE)
+
+## ----data-3, eval=TRUE, include=TRUE, echo=TRUE-------------------------------
+knitr::kable(head(h))
 
 ## ----filtering, eval=TRUE, include=TRUE---------------------------------------
 h2 = h %>%
-  filter(idex == 3) %>%
-  select(id, station, X, Y, hyy, Q) %>%
-  group_by(hyy, id, station, X, Y) %>%
-  summarise(annual_mean_Q = round(mean(Q, na.rm = TRUE), 1)) %>% 
-  pivot_wider(names_from = hyy, values_from = annual_mean_Q)
+  dplyr::filter(idex == 3) %>%
+  dplyr::select(id, station, X, Y, hyy, Q) %>%
+  dplyr::group_by(hyy, id, station, X, Y) %>%
+  dplyr::summarise(annual_mean_Q = round(mean(Q, na.rm = TRUE), 1)) %>% 
+  tidyr::pivot_wider(names_from = hyy, values_from = annual_mean_Q)
 
-## ----filtering2, echo=FALSE---------------------------------------------------
-library(knitr)
-kable(head(h2), caption = "Examplary data frame of hydrological preprocesssing.")
+knitr::kable(head(h2))
+
+## ----filtering2, echo=FALSE, eval=FALSE---------------------------------------
+#  
+#  knitr::kable(head(h2),
+#               caption = "Exemplary data frame of hydrological preprocesssing.")
+
+## ----setup_restore, include = FALSE-------------------------------------------
+options(old)
 

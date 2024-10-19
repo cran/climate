@@ -11,6 +11,7 @@ meteo_imgw_daily(
   coords = FALSE,
   station = NULL,
   col_names = "short",
+  allow_failure = TRUE,
   ...
 )
 }
@@ -25,16 +26,20 @@ meteo_imgw_daily(
 \item{coords}{add coordinates of the station (logical value TRUE or FALSE)}
 
 \item{station}{name of meteorological station(s).
-It accepts names (characters in CAPITAL LETTERS); stations' IDs (numeric) are
-no longer valid}
+It accepts names (characters in CAPITAL LETTERS); Stations' IDs (numeric) are no longer valid}
 
 \item{col_names}{three types of column names possible:
 "short" - default, values with shorten names,
 "full" - full English description,
 "polish" - original names in the dataset}
 
+\item{allow_failure}{logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE}
+
 \item{...}{other parameters that may be passed to the 'shortening' function that
 shortens column names}
+}
+\value{
+data.frame with a daily meteorological measurements
 }
 \description{
 Downloading daily (meteorological) data from the SYNOP / CLIMATE / PRECIP stations
@@ -43,7 +48,6 @@ available in the danepubliczne.imgw.pl collection
 \examples{
 \donttest{
   daily = meteo_imgw_daily(rank = "climate", year = 2000)
-  head(daily)
 }
 
 }

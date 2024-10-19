@@ -1,3 +1,36 @@
+# climate 1.2.2
+
+* Major fixes for adjusting code to stay in line with CRAN policies
+* Fixes for `hydro_imgw()` set of functions due to changes in encoding and metadata structure
+
+
+# climate 1.2.1
+
+* Corrected duplicated column names for IMGW-PIB stations
+* Adjusted encoding changes and documentation updates in `meteo_imgw_telemetry_stations()`
+
+# climate 1.2.0
+
+* Corrected encoding problems for some of platforms where IMGW-PIB metadata were not parsed correctly
+* Added location of IMGW-PIB telemetry stations within `meteo_imgw_telemetry_stations()`
+* Minor bug fixes
+
+
+# climate 1.1.1
+
+* Fix problems with downloading `precip` dataset from IMGW-PIB repository after recent changes in metadata
+* Bug fix for `ogimet_daily` if data contains more than one year
+
+
+# climate 1.1.0
+
+* A new approach for handling CRAN policy for resolving problems if network issues are detected or some of the external services are temporarily down. 
+* Adding `allow_failure` argument used by default that turns off automatic debugging but avoid warnings and errors for most typical use cases
+* re-factoring of unit tests
+* documentation build with CI/CD
+* updating vignettes and examples, including the way to use climate with Python
+
+
 # climate 1.0.5
 
 * `meteo_imgw` family of functions supports multiple names as argument - bug fix

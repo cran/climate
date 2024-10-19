@@ -13,12 +13,14 @@
 #' @param col_names three types of column names possible: "short" - default,
 #' values with shorten names, "full" - full English description,
 #' "polish" - original names in the dataset
+#' @param allow_failure logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE
 #' @param ... other parameters that may be passed to the 'shortening'
 #' function that shortens column names
 #' @importFrom XML readHTMLTable
 #' @importFrom utils download.file unzip read.csv
 #' @importFrom data.table fread
 #' @export
+#' @return meteorological data for the hourly time interval
 #'
 #' @examples \donttest{
 #'   hourly = meteo_imgw_hourly(rank = "climate", year = 1984)
@@ -26,18 +28,51 @@
 #' }
 #'
 
+
 meteo_imgw_hourly = function(rank = "synop",
                              year,
                              status = FALSE,
                              coords = FALSE,
                              station = NULL,
-                             col_names = "short", ...) {
-  translit = check_locale()
+                             col_names = "short", 
+                             allow_failure = TRUE,
+                             ...) {
+  
+  if (allow_failure) {
+    tryCatch(meteo_imgw_hourly_bp(rank,
+                                  year,
+                                  status,
+                                  coords,
+                                  station,
+                                  col_names, ...),
+             error = function(e){
+               message(paste("Potential error(s) found. Problems with downloading data.\n",
+                             "\rRun function with argument allow_failure = FALSE",
+                             "to see more details"))})
+  } else {
+    meteo_imgw_hourly_bp(rank,
+                         year,
+                         status,
+                         coords,
+                         station,
+                         col_names, ...)
+  }
+}
 
+#' @keywords internal
+#' @noRd
+meteo_imgw_hourly_bp = function(rank,
+                                year,
+                                status,
+                                coords,
+                                station,
+                                col_names, ...) {
+  
+  translit = check_locale()
   stopifnot(rank == "synop" | rank == "climate") # dla terminowek tylko synopy i klimaty maja dane
   base_url = "https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
-  interval = "hourly" # to mozemy ustawic na sztywno
-  interval_pl = "terminowe" # to mozemy ustawic na sztywno
+  interval = "hourly"
+  interval_pl = "terminowe"
   meta = meteo_metadata_imgw(interval = "hourly", rank = rank)
   rank_pl = switch(rank, synop = "synop", climate = "klimat", precip = "opad")
   temp = tempfile()
@@ -45,7 +80,7 @@ meteo_imgw_hourly = function(rank = "synop",
            output = temp)
   a = readLines(temp, warn = FALSE)
   unlink(temp)
-
+  
   ind = grep(readHTMLTable(a)[[1]]$Name, pattern = "/")
   catalogs = as.character(readHTMLTable(a)[[1]]$Name[ind])
 
@@ -69,20 +104,20 @@ meteo_imgw_hourly = function(rank = "synop",
 
       ind = grep(readHTMLTable(folder_contents)[[1]]$Name, pattern = "zip")
       files = as.character(readHTMLTable(folder_contents)[[1]]$Name[ind])
+      
       addresses_to_download = paste0(address, files)
 
       for (j in seq_along(addresses_to_download)) {
         temp = tempfile()
         temp2 = tempfile()
         test_url(addresses_to_download[j], temp)
-        #download.file(addresses_to_download[j], temp)
         unzip(zipfile = temp, exdir = temp2)
         file1 = paste(temp2, dir(temp2), sep = "/")
 
         if (translit) {
           data1 = as.data.frame(data.table::fread(cmd = paste("iconv -f CP1250 -t ASCII//TRANSLIT", file1)))
         } else {
-          data1 = read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250")
+          data1 = suppressWarnings(read.csv(file1, header = FALSE, stringsAsFactors = FALSE, fileEncoding = "CP1250"))
         }
 
         colnames(data1) = meta[[1]]$parameters
@@ -140,13 +175,16 @@ meteo_imgw_hourly = function(rank = "synop",
   all_data = do.call(rbind, all_data)
 
   if (coords) {
-    all_data = merge(climate::imgw_meteo_stations, all_data, by.x = "id", by.y = "Kod stacji", all.y = TRUE)
+    all_data = merge(climate::imgw_meteo_stations[,1:3], 
+                     all_data, 
+                     by.x = "id", 
+                     by.y = "Kod stacji", 
+                     all.y = TRUE)
   }
 
   # dodaje rank
   rank_code = switch(rank, synop = "SYNOPTYCZNA", climate = "KLIMATYCZNA")
   all_data = cbind(data.frame(rank_code = rank_code), all_data)
-
   all_data = all_data[all_data$Rok %in% year, ] # przyciecie tylko do wybranych lat gdyby sie pobralo za duzo
 
   #station selection
@@ -178,7 +216,8 @@ meteo_imgw_hourly = function(rank = "synop",
     all_data = all_data[order(all_data$id, all_data$Rok, all_data$Miesiac, all_data$Dzien, all_data$Godzina), ]
   }
 
-  # dodanie opcji  dla skracania kolumn i usuwania duplikatow:
+  # extra option for shortening colnames and removing duplicates
   all_data = meteo_shortening_imgw(all_data, col_names = col_names, ...)
+  rownames(all_data) = NULL
   return(all_data)
-} # end of function
+}

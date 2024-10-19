@@ -2,7 +2,7 @@
 % Please edit documentation in R/meteo_imgw.R
 \name{meteo_imgw}
 \alias{meteo_imgw}
-\title{Meteorological data from IMGW}
+\title{Meteorological data from the IMGW-PIB official repository}
 \usage{
 meteo_imgw(
   interval,
@@ -41,11 +41,11 @@ A data.frame with columns describing the meteorological parameters
 (e.g. temperature, wind speed, precipitation) where each row represent a measurement,
 depending on the interval, at a given hour, month or year.
 If \code{coords = TRUE} additional two
-columns with geografic coordinates are added.
+columns with geographic coordinates are added.
 }
 \description{
 Downloading hourly, daily, and monthly meteorological data from the
-SYNOP / CLIMATE / PRECIP stations available in the danepubliczne.imgw.pl collection
+SYNOP / CLIMATE / PRECIP stations available in the danepubliczne.imgw.pl collection.
 }
 \examples{
 \donttest{

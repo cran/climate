@@ -1,29 +1,24 @@
 #' Meteorological metadata
 #'
-#' Downloading the description (metadata) to the meteorological data available in the dane.imgw repository.imgw.pl.
+#' Downloading the description (metadata) to the meteorological data available in the 
+#' danepubliczne.imgw.pl collection.
 #' By default, the function returns a list or data frame for a selected subset
 #'
 #' @param interval temporal resolution of the data ("hourly", "daily", "monthly")
 #' @param rank rank of station ("synop", "climate", "precip")
 #' @keywords internal
-#'
-#' @examples
-#' \donttest{
-#'   meta = climate:::meteo_metadata_imgw(interval = "hourly", rank = "synop")
-#'   meta = climate:::meteo_metadata_imgw(interval = "daily", rank = "synop")
-#'   meta = climate:::meteo_metadata_imgw(interval = "monthly", rank = "precip")
-#' }
+#' @noRd
 
-meteo_metadata_imgw = function(interval, rank) { # interval moze byc: monthly, hourly, hourly
+meteo_metadata_imgw = function(interval, rank) { # interval can be: monthly, hourly, hourly
+  
   b = NULL
-
   base_url = "https://danepubliczne.imgw.pl/data/dane_pomiarowo_obserwacyjne/"
 
-  # METADANE daily:
-  if (interval == "daily") { # uwaga! daily maja dla climateow i synopow po 2 pliki z metadanymi!!!
+  # METADATA daily:
+  if (interval == "daily") { # warning! daily for climates and synop have 2 files with metadata!!!
 
     if (rank == "synop") {
-      b[[1]] = clean_metadata_meteo(address = paste0(base_url, "dane_meteorologiczne/dobowe/synop/s_d_format.txt"),
+      b[[1]] = clean_metadata_meteo(address = paste0(base_url,"dane_meteorologiczne/dobowe/synop/s_d_format.txt"),
                                rank = "synop", interval = "daily")
       b[[2]] = clean_metadata_meteo(address = paste0(base_url, "dane_meteorologiczne/dobowe/synop/s_d_t_format.txt"),
                                               rank = "synop", interval = "daily")
@@ -41,7 +36,7 @@ meteo_metadata_imgw = function(interval, rank) { # interval moze byc: monthly, h
                                rank = "precip", interval = "daily")
     }
 
-  }
+  } # end of daily interval
 
   if (interval == "monthly") {
 
@@ -64,9 +59,9 @@ meteo_metadata_imgw = function(interval, rank) { # interval moze byc: monthly, h
                                rank = "precip", interval = "monthly")
     }
 
-  } # koniec MIESIECZNYCH
+  } # end of monthly interval
 
-  ## rozpoczecie dla danych TERMINOWYCH:
+  ## hourly data section:
   if (interval == "hourly") {
     if (rank == "synop") b[[1]] = clean_metadata_meteo(paste0(base_url, "dane_meteorologiczne/terminowe/synop/s_t_format.txt"),
                                                  rank = "synop", interval = "hourly")
@@ -76,6 +71,5 @@ meteo_metadata_imgw = function(interval, rank) { # interval moze byc: monthly, h
       stop("The precipitation stations ('precip') does not provide hourly data.", call. = FALSE)
     }
   }
-
   return(b)
 }
