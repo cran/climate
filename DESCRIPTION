@@ -1,6 +1,6 @@
 Package: climate
 Title: Interface to Download Meteorological (and Hydrological) Datasets
-Version: 1.2.1
+Version: 1.2.2
 Authors@R: c(person(given = "Bartosz",
            family = "Czernecki",
            role = c("aut", "cre"),
@@ -34,11 +34,11 @@ URL: https://github.com/bczernecki/climate
 BugReports: https://github.com/bczernecki/climate/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2024-10-18 17:20:00 UTC; bartosz
+Packaged: 2024-12-20 12:48:54 UTC; bartosz
 Author: Bartosz Czernecki [aut, cre] (<https://orcid.org/0000-0001-6496-1386>),
   Arkadiusz Głogowski [aut] (<https://orcid.org/0000-0002-7587-8892>),
   Jakub Nowosad [aut] (<https://orcid.org/0000-0002-1057-3721>),
   IMGW-PIB [ctb] (source of the data)
 Maintainer: Bartosz Czernecki <nwp@amu.edu.pl>
 Repository: CRAN
-Date/Publication: 2024-10-19 07:50:06 UTC
+Date/Publication: 2024-12-20 13:10:07 UTC
