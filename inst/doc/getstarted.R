@@ -29,13 +29,13 @@ if (is.data.frame(PL)) {
 df = readRDS(system.file("extdata/vignettes/svalbard_noaa.rds", package = "climate"))
 
 ## ----windrose,eval=F----------------------------------------------------------
-#  # downloading data with NOAA service:
-#  df = meteo_noaa_hourly(station = "010080-99999", year = 2016)
-#  
-#  # You can also download the same (but more granular) data with Ogimet.com (example for year 2016):
-#  # df = meteo_ogimet(interval = "hourly",
-#  #                   date = c("2016-01-01", "2016-12-31"),
-#  #                   station = c("01008"))
+# # downloading data with NOAA service:
+# df = meteo_noaa_hourly(station = "010080-99999", year = 2016)
+# 
+# # You can also download the same (but more granular) data with Ogimet.com (example for year 2016):
+# # df = meteo_ogimet(interval = "hourly",
+# #                   date = c("2016-01-01", "2016-12-31"),
+# #                   station = c("01008"))
 
 ## ----noaa-kable,eval=T--------------------------------------------------------
 knitr::kable(head(df))
@@ -47,13 +47,13 @@ df2 = profile_demo[[1]]
 colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 
 ## ----sonda, eval=F, include=T-------------------------------------------------
-#  profile_demo <- sounding_wyoming(wmo_id = 12120,
-#                                   yy = 2000,
-#                                   mm = 3,
-#                                   dd = 23,
-#                                   hh = 0)
-#  df2 = profile_demo[[1]]
-#  colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
+# profile_demo <- sounding_wyoming(wmo_id = 12120,
+#                                  yy = 2000,
+#                                  mm = 3,
+#                                  dd = 23,
+#                                  hh = 0)
+# df2 = profile_demo[[1]]
+# colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 
 ## ----sonda2, echo=FALSE-------------------------------------------------------
 knitr::kable(head(df2, 10), caption = "Exemplary data frame of sounding preprocessing")
@@ -62,11 +62,12 @@ knitr::kable(head(df2, 10), caption = "Exemplary data frame of sounding preproce
 df = readRDS(system.file("extdata/vignettes/leba_monthly.rds", package = "climate"))
 
 ## ----imgw_meteo-2, eval=FALSE, include=TRUE-----------------------------------
-#  library(climate)
-#  df = meteo_imgw(interval = "monthly", rank = "synop", year = 1991:2000, station = "ŁEBA")
-#  # please note that sometimes 2 names are used for the same station in different years
+# library(climate)
+# df = meteo_imgw(interval = "monthly", rank = "synop", year = 1991:2000, station = "ŁEBA")
+# # please note that sometimes 2 names are used for the same station in different years
 
 ## ----imgw_meteo-3, fig.width=7, fig.height=7, fig.fullwidth=TRUE, error=TRUE, eval=TRUE, include=TRUE----
+try({
 suppressMessages(library(dplyr))
 df2 = dplyr::select(df, station:t2m_mean_mon, rr_monthly)
 
@@ -80,19 +81,22 @@ monthly_summary = df2 %>%
 monthly_summary = as.data.frame(t(monthly_summary[, c(5, 2, 3, 4)])) 
 monthly_summary = round(monthly_summary, 1)
 colnames(monthly_summary) = month.abb
+})
 
 ## ----imgw_meteo2, echo=FALSE, error=TRUE--------------------------------------
+try({
 knitr::kable(head(monthly_summary), 
              caption = "Exemplary data frame of meteorological preprocessing.")
+})
 
 ## ----data, eval=TRUE, include=FALSE, echo=FALSE-------------------------------
 h = readRDS(system.file("extdata/vignettes/hydro_monthly.rds", package = "climate"))
 
 ## ----data-2, eval=FALSE, include=TRUE-----------------------------------------
-#  library(climate)
-#  library(dplyr)
-#  library(tidyr)
-#  h = hydro_imgw(interval = "monthly", year = 2001:2002, coords = TRUE)
+# library(climate)
+# library(dplyr)
+# library(tidyr)
+# h = hydro_imgw(interval = "monthly", year = 2001:2002, coords = TRUE)
 
 ## ----data-3, eval=TRUE, include=TRUE, echo=TRUE-------------------------------
 knitr::kable(head(h))
@@ -108,9 +112,9 @@ h2 = h %>%
 knitr::kable(head(h2))
 
 ## ----filtering2, echo=FALSE, eval=FALSE---------------------------------------
-#  
-#  knitr::kable(head(h2),
-#               caption = "Exemplary data frame of hydrological preprocesssing.")
+# 
+# knitr::kable(head(h2),
+#              caption = "Exemplary data frame of hydrological preprocesssing.")
 
 ## ----setup_restore, include = FALSE-------------------------------------------
 options(old)
