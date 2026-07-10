@@ -14,25 +14,25 @@ sounding_wyoming(
   dd,
   hh,
   min = 0,
-  bufr = FALSE,
+  source = "AUTODETECT",
   allow_failure = TRUE
 )
 }
 \arguments{
-\item{wmo_id}{international WMO station code (World Meteorological Organization ID); For Polish stations: Leba - 12120, Legionowo - 12374, Wrocław- 12425}
+\item{wmo_id}{international WMO station code (World Meteorological Organization ID); For Polish stations: Leba - 12120, Legionowo - 12374, Wrocław - 12425}
 
-\item{yy}{year - single number}
+\item{yy}{year - calendar year}
 
-\item{mm}{month - single number denoting month}
+\item{mm}{month - calendar month}
 
-\item{dd}{day - single number denoting day}
+\item{dd}{day - calendar day}
 
-\item{hh}{hour - single number denoting initial hour of sounding; for most stations this measurement is done twice a day (i.e. at 12 and 00 UTC), sporadically 4 times a day}
+\item{hh}{hour - hour of sounding; for most stations measurements are performed twice a day (i.e. at 12 and 00 UTC), sporadically 4 times a day}
 
-\item{min}{minute - single number denoting initial minute of sounding; applies only to BUFR soundings.}
+\item{min}{minute - minute of sounding; Default 00; Other values applies only to BUFR soundings.}
 
-\item{bufr}{\itemize{
-\item BUFR or TEMP sounding to be decoded. By default TEMP is used. For BUFR soundings use \code{bufr = TRUE}
+\item{source}{\itemize{
+\item optional; \code{AUTODETECT}, \code{BUFR} (raw; most detailed) or \code{TEMP} (FM-35) input format. By default "AUTODETECT" is used which means that the function will try to detect the format automatically. If a station use only a specific format that is known you can specify it explicitly.
 }}
 
 \item{allow_failure}{logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE}
@@ -47,44 +47,37 @@ Returns two lists with values described at: weather.uwyo.edu ; The first list co
 \item RELH - Relative humidity (\%)
 \item MIXR - Mixing ratio (g/kg)
 \item DRCT - Wind direction (deg)
-\item SKNT - Wind speed (knots)
-\item THTA = (K)
-\item THTE = (K)
-\item THTV = (K)
+\item SPED - Wind speed (m/s)
+\item THTA - (K)
+\item THTE - (K)
+\item THTV - (K)
 }
-The second list contains metadata and calculated thermodynamic / atmospheric instability indices (for TEMP soundings only)
+The second list contains metadata for time of observation and station location
 
 A list of 2 data.frames where first data frame represents parameters of upper parts o with columns describing the meteorogical parameters (e.g. temperature, air pressure) where each row represent a measurement,
 depending on the height. Second data.frame presents a description of the conditions under which the sounding was carried out.
 }
 \description{
-Downloading the measurements of the vertical profile of atmosphere (also known as sounding data). Data can be retrieved using TEMP and BUFR sounding formatting.
+Downloading the measurements of the vertical profile of atmosphere (also known as sounding data).
+Data can be retrieved using TEMP and BUFR sounding formatting. By default automatic detection of input format is used.
 }
 \examples{
 \donttest{
-##############################################################################
 # download data for Station 45004 starting 1120Z 11 Jul 2021; Kowloon, HONG KONG, CHINA
-# using TEMP and BUFR sounding formats
-##############################################################################
-  TEMP = sounding_wyoming(wmo_id = 45004, yy = 2021, mm = 07, dd = 17, 
-                          hh = 12, min = 00)
-  head(TEMP[[1]])
-  
-  BUFR = sounding_wyoming(wmo_id = 45004, yy = 2021, mm = 07, dd = 17, 
-                          hh = 12, min = 00, bufr = TRUE)
-  head(BUFR[[1]])
+# using AUTODETECT, TEMP and BUFR sounding formats
 
+# autodect input format:
+sounding_auto = sounding_wyoming(wmo_id = 45004, 
+                                 yy = 2021, mm = 07, dd = 17, hh = 12)
 
-##############################################################################
-### example with a random date to download sounding from LEBA, PL station: ###
-##############################################################################
-
-  profile = sounding_wyoming(wmo_id = 12120, 
-                             yy = sample(2000:2019,1),
-                             mm = sample(1:12,1), 
-                             dd = sample(1:20,1), 
-                             hh = 0)
-  # plot(profile[[1]]$HGHT, profile[[1]]$PRES, type = 'l')
+# temp (fm35) input format:
+sounding_temp = sounding_wyoming(wmo_id = 45004, 
+                                 yy = 2021, mm = 07, dd = 17, hh = 12, 
+                                 source = "TEMP")
+# bufr input format:  
+sounding_bufr = sounding_wyoming(wmo_id = 45004, 
+                                 yy = 2021, mm = 07, dd = 17, hh = 12, min = 00, 
+                                 source = "BUFR")
 }
 
 }

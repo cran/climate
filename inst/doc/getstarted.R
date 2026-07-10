@@ -3,11 +3,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-old <- options(scipen = 999)
+old = options(scipen = 999)
 
 ## ----stations , eval=T, fig.width=7,fig.height=7, fig.fullwidth=TRUE----------
 library(climate)
-ns = nearest_stations_ogimet(country = c("United Kingdom", "France"),
+ns = nearest_stations_ogimet(country = c("United Kingdom"),
                              point = c(-3, 50),
                              no_of_stations = 50, 
                              add_map = TRUE)
@@ -35,7 +35,7 @@ df = readRDS(system.file("extdata/vignettes/svalbard_noaa.rds", package = "clima
 # # You can also download the same (but more granular) data with Ogimet.com (example for year 2016):
 # # df = meteo_ogimet(interval = "hourly",
 # #                   date = c("2016-01-01", "2016-12-31"),
-# #                   station = c("01008"))
+# #                   station = "01008")
 
 ## ----noaa-kable,eval=T--------------------------------------------------------
 knitr::kable(head(df))
@@ -47,7 +47,7 @@ df2 = profile_demo[[1]]
 colnames(df2)[c(1, 3:4)] = c("PRESS", "TEMP", "DEWPT") # changing column names
 
 ## ----sonda, eval=F, include=T-------------------------------------------------
-# profile_demo <- sounding_wyoming(wmo_id = 12120,
+# profile_demo = sounding_wyoming(wmo_id = 12120,
 #                                  yy = 2000,
 #                                  mm = 3,
 #                                  dd = 23,
@@ -96,7 +96,7 @@ h = readRDS(system.file("extdata/vignettes/hydro_monthly.rds", package = "climat
 # library(climate)
 # library(dplyr)
 # library(tidyr)
-# h = hydro_imgw(interval = "monthly", year = 2001:2002, coords = TRUE)
+# h = hydro_imgw(interval = "monthly", year = 2001:2002)
 
 ## ----data-3, eval=TRUE, include=TRUE, echo=TRUE-------------------------------
 knitr::kable(head(h))
@@ -115,6 +115,37 @@ knitr::kable(head(h2))
 # 
 # knitr::kable(head(h2),
 #              caption = "Exemplary data frame of hydrological preprocesssing.")
+
+## ----co2, eval=FALSE, include=TRUE--------------------------------------------
+# library(climate)
+# library(ggplot2)
+# 
+# co2 = meteo_noaa_co2()
+# co2$date = ISOdate(co2$yy, co2$mm, 1)
+# 
+# ggplot(co2, aes(date, co2_avg)) +
+#   geom_line() +
+#   geom_smooth() +
+#   theme_bw() +
+#   labs(title = "Carbon Dioxide (CO2)",
+#        subtitle = "Mauna Loa Observatory",
+#        x = "", y = "ppm")
+
+## ----synop_parser, eval=TRUE, include=TRUE------------------------------------
+library(climate)
+
+synop_code = "AAXX 01004 88889 12782 61506 10094 20047 30111 40197 53007 60001 81541"
+
+# Decode a single message — returns a named list
+result = synop_parser(synop_code)
+result$air_temperature$value   # 9.4°C
+result$wind_speed$value        # 6 kt
+result$sea_level_pressure$value # 1019.7 hPa
+
+## ----parser-df, eval=TRUE, include=TRUE---------------------------------------
+# Return a tidy data frame with one row per message
+df_parser = synop_parser(synop_code, as_data_frame = TRUE)
+knitr::kable(df_parser[, 1:8])
 
 ## ----setup_restore, include = FALSE-------------------------------------------
 options(old)

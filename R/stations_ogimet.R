@@ -6,7 +6,6 @@
 #' @param date a day when measurements were done in all available locations
 #' @param add_map logical - whether to draw a map based on downloaded dataset (requires `maps` package)
 #' @param allow_failure logical - whether to proceed or stop on failure. By default set to TRUE (i.e. don't stop on error). For debugging purposes change to FALSE
-#' @importFrom XML readHTMLTable
 #' @importFrom utils object.size
 #' 
 #' @export
@@ -97,6 +96,7 @@ stations_ogimet_bp = function(country = country, date = date, add_map = add_map)
     res = suppressWarnings(do.call("rbind", strsplit(res, " ")))
     res1 = matrix(res[, c(1, 3, 5:7)], ncol = 5)
     
+    # nocov start
     lat = suppressWarnings(
       as.numeric(substr(res1[, 1], 1, 2)) +
       (as.numeric(substr(res1[, 1], 4, 5)) / 100) * 1.6667
@@ -145,6 +145,7 @@ if (!is.null(res)) {
                    col = 'grey70', cex = 0.6)
     maps::map(add = TRUE)
   }
+  # nocov end
 
 } # end of checking if res is NULL
   return(res)
