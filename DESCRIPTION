@@ -1,6 +1,6 @@
 Package: climate
 Title: Interface to Download Meteorological (and Hydrological) Datasets
-Version: 1.4.0
+Version: 1.4.1
 Authors@R: c(person(given = "Bartosz",
            family = "Czernecki",
            role = c("aut", "cre"),
@@ -36,7 +36,7 @@ VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 7.3.3
 NeedsCompilation: no
-Packaged: 2026-07-10 20:57:17 UTC; bartosz
+Packaged: 2026-09-18 12:30:38 UTC; bartosz
 Author: Bartosz Czernecki [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-6496-1386>),
   Arkadiusz Głogowski [aut] (ORCID:
@@ -45,4 +45,4 @@ Author: Bartosz Czernecki [aut, cre] (ORCID:
   IMGW-PIB [ctb] (source of the data)
 Maintainer: Bartosz Czernecki <nwp@amu.edu.pl>
 Repository: CRAN
-Date/Publication: 2026-07-10 23:10:15 UTC
+Date/Publication: 2026-09-18 12:50:02 UTC

@@ -51,7 +51,7 @@ Country-level bulk downloads are supported via the `country_name` argument (SYNO
 - 🌍 [**meteo_noaa_hourly**](https://bczernecki.github.io/climate/reference/meteo_noaa_hourly.html) -
 Downloading hourly NCEI/NOAA Integrated Surface Hourly (ISH) meteorological data - Some stations have > 100 years long history of observations
 
-- 🌍 [**meteo_noaa_co2**](https://bczernecki.github.io/climate/reference/meteo_noaa_co2.html)] -
+- 🌍 [**meteo_noaa_co2**](https://bczernecki.github.io/climate/reference/meteo_noaa_co2.html) -
 Downloading monthly CO2 measurements from Mauna Loa Observatory
 
 - 🌍 [**sounding_wyoming**](https://bczernecki.github.io/climate/reference/sounding_wyoming.html) - 
@@ -61,6 +61,8 @@ Downloading measurements of the vertical profile of atmosphere (aka rawinsonde d
 Downloading hourly, daily, and monthly meteorological data from the Polish met service across 
 all types of stations (i.e. SYNOP/CLIMATE/PRECIP ) available in the danepubliczne.imgw.pl collection. 
 It is a wrapper for `meteo_monthly()`, `meteo_daily()`, `meteo_hourly()` and `meteo_imgw_datastore()` which gives access from montly to even to 10-min dataset.
+IMGW archive outputs use short English parameter names; the original IMGW names are
+available as `label` attributes on the corresponding columns.
 
   
 ### (Polish) Hydrological data
@@ -69,6 +71,8 @@ It is a wrapper for `meteo_monthly()`, `meteo_daily()`, `meteo_hourly()` and `me
 Downloading hourly, daily, and monthly hydrological data from stations available in the
 danepubliczne.imgw.pl collection.
 It is a wrapper for previously developed set of functions such as: `hydro_monthly()`, and `hydro_daily()`
+IMGW archive outputs use short English parameter names; the original IMGW names are
+available as `label` attributes on the corresponding columns.
 
 - 🇵🇱 [**hydro_imgw_datastore**](https://bczernecki.github.io/climate/reference/hydro_imgw_datastore.html) - 
 Downloading hourly and subhourly hydrological data from the IMGW-PIB hydro telemetry stations.
@@ -80,12 +84,12 @@ country in the Ogimet repository
 - 🌍 **nearest_stations_ogimet** - Downloading information about nearest stations to the selected point using Ogimet repository
 - 🌍 **nearest_stations_noaa** - Downloading information about nearest stations to the selected point available for the selected country in the NOAA ISH meteorological repository
 - 🇵🇱 **nearest_stations_imgw** - List of nearby meteorological or hydrological IMGW-PIB stations in Poland
-- 🇵🇱 **imgw_meteo_stations** - Built-in   metadata from the IMGW-PIB repository for meteorological stations, their geographical coordinates, and ID numbers
-- 🇵🇱 **imgw_hydro_stations** - Built-in metadata from the IMGW-PIB repository for hydrological stations, their geographical coordinates, and ID numbers
+- 🇵🇱 **imgw_meteo_stations** - Built-in metadata from the IMGW-PIB repository for meteorological stations, their geographical coordinates, and ID numbers
+- 🇵🇱 **imgw_hydro_stations** - as above, for hydrological stations
 - 🇵🇱 **stations_meteo_imgw_telemetry** - Downloading complete and up-to-date information about coordinates for IMGW-PIB telemetry meteorological stations
 - 🇵🇱 **stations_hydro_imgw_telemetry** - Downloading complete and up-to-date information about coordinates for IMGW-PIB telemetry hydrological stations
 
-- 🌍 [**synop_parser**](https://bczernecki.github.io/climate/reference/synop_parse.html) - Decoding raw SYNOP meteorological messages into structured R lists or data frames. For a full walkthrough see the [SYNOP Messages vignette](https://bczernecki.github.io/climate/articles/synop_parser.html).
+- 🌍 [**synop_parser**](https://bczernecki.github.io/climate/reference/synop_parser.html) - Decoding raw SYNOP meteorological messages into structured R lists or data frames. For a full walkthrough see the [SYNOP Messages vignette](https://bczernecki.github.io/climate/articles/synop_parser.html).
 
 ## Example 1
 #### Download hourly dataset from NCEI/NOAA ISH meteorological repository:
@@ -193,7 +197,7 @@ h = hydro_imgw(interval = "daily", year = 2010:2011)
 head(h)
 ```
 
-| id        | station | riv_or_lake | date       | hyy  | idhyy | dd | H   | Q   | T  | mm | thick |
+| id        | station | riv_or_lake | Data       | hyy  | idhyy | dd | H   | Q   | T  | mm | thick |
 |-----------|---------|-------------|------------|------|-------|----|-----|-----|----|----|-------|
 | 150210180 | ANNOPOL | Wisła (2)   | 2009-11-01 | 2010 | 1     | 1  | 287 | 436 | NA | 11 | NA    |
 | 150210180 | ANNOPOL | Wisła (2)   | 2009-11-02 | 2010 | 1     | 2  | 282 | 412 | NA | 11 | NA    |
@@ -201,6 +205,9 @@ head(h)
 | 150210180 | ANNOPOL | Wisła (2)   | 2009-11-04 | 2010 | 1     | 4  | 268 | 352 | NA | 11 | NA    |
 | 150210180 | ANNOPOL | Wisła (2)   | 2009-11-05 | 2010 | 1     | 5  | 264 | 336 | NA | 11 | NA    |
 | 150210180 | ANNOPOL | Wisła (2)   | 2009-11-06 | 2010 | 1     | 6  | 260 | 320 | NA | 11 | NA    |
+
+The original IMGW description of `H` can be inspected with
+`attr(h$H, "label")`.
 
 ## Example 5
 #### Create Walter & Lieth climatic diagram based on downloaded data
