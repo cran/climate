@@ -1,7 +1,7 @@
-da704c35ae45d65ac8becf2832a8b5ae *DESCRIPTION
+9316207d255eb2fe3a318eb45d1bf48b *DESCRIPTION
 b82f9a3ce5bb877ce4606fb4445329e0 *LICENSE
 a2be63271d1ab65ffc2a5e0d5c5999ed *NAMESPACE
-a9c89d3367bfa988a31ee7fb1c00c603 *NEWS.md
+25060a5be97d5120d291206ae63d9c70 *NEWS.md
 142fb6d7155f6abcc1c7037c59b3b855 *R/check_locale.R
 ad603aae9496cf73e5d99830c6a6db65 *R/clean_metadata_hydro.R
 6e35491fac878285308971b08f21e6be *R/clean_metadata_meteo.R
@@ -32,7 +32,7 @@ dd91685d177601e576ce2af08a9bf94b *R/meteo_imgw_daily.R
 c918494d19311d7f94a6fa5a82751ff7 *R/meteo_noaa_hourly.R
 106f38ac7ee3e9bfae14b3f9214e60ec *R/meteo_ogimet.R
 ed57475d140da6fc836ff02f52e86877 *R/meteo_ogimet_synop.R
-bedd33575b535ce3a1393e627b5fff21 *R/meteo_shortening_imgw.R
+6f45377aa8733bce45c39183dae6fd28 *R/meteo_shortening_imgw.R
 314f6a520d13c1e25fbbe3b53cb4bf9e *R/nearest_stations_imgw.R
 d13c9b38945ace7ab7485d7466c56dc8 *R/nearest_stations_noaa.R
 2efd8a70401c6125429992af7f4d0590 *R/nearest_stations_ogimet.R
@@ -62,7 +62,7 @@ f9dd673fa2004192184e7eb310c5eb08 *data/imgw_meteo_abbrev.rda
 e04cc4653f373f70a2a978671afc9924 *inst/CITATION
 4bf3553a0d5721d33f903ccce4e5756b *inst/doc/getstarted.R
 2f4a99458bf130beb16366cf2e01b258 *inst/doc/getstarted.Rmd
-b3d6c5bb27342818a3e51077edfebaa4 *inst/doc/getstarted.html
+66473ee01bc17fd7f420a1c35ef5cc9e *inst/doc/getstarted.html
 bd92d80f0e67fdbdf53f674fa213b7fb *inst/extdata/vignettes/hydro_monthly.rds
 ffc44344b21d18c072a8ed76f5a1a36a *inst/extdata/vignettes/leba_monthly.rds
 68c75e63fb2df1fe48bb4986c550273f *inst/extdata/vignettes/svalbard_noaa.rds
